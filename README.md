@@ -1,4 +1,4 @@
-# FTC 8.1.1 Roadrunner Template
+# FTC Skystone
 
 An example FTC project using [Road Runner](https://github.com/acmerobotics/road-runner)
 

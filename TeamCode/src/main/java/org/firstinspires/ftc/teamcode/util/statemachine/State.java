@@ -350,12 +350,26 @@ public interface State extends Runnable{
                         () -> {
                             while (!internalStateManager.hasNoStates()) {
                                 internalStateManager.run();
-                            }});
+                            }
+
+                            try{
+                                Thread.sleep(0);
+                            } catch (InterruptedException e) {
+                                throw new RuntimeException(e);
+                            }
+                        });
             } else {
                 new Thread(() -> {
                     while (!internalStateManager.hasNoStates()) {
                         internalStateManager.run();
-                    }});
+                    }
+
+                    try{
+                      Thread.sleep(0);
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
+                });
             }
         }
 

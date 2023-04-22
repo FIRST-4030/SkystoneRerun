@@ -85,6 +85,7 @@ public class ServoEx implements Servo {
 
         if (currentCommand.isFinished()){
             currentCommand.end();
+            setPosition(clamp(0, 1, currentCommand.getPos() / range));
             commandQueue.removeFirst();
             initialized = false;
         }

@@ -14,7 +14,6 @@ public class LiftController {
 
     public static PIDCoefficients pidCoefficients = new PIDCoefficients();
     protected PIDFController pidfController;
-
     public LiftController(HardwareMap hardwareMap, String motorName, boolean invertRight){
         motor = hardwareMap.dcMotor.get(motorName);
 

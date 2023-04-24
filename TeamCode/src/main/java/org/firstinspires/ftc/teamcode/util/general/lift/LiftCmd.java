@@ -15,6 +15,7 @@ public class LiftCmd implements State {
     @Override
     public void init() {
         this.liftController.setBusy(true);
+        this.liftController.pidfController.reset();
         this.liftController.pidfController.setTargetPosition(target);
     }
 

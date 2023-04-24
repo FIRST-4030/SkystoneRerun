@@ -4,17 +4,28 @@ import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.roadrunner.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.util.general.misc.GeneralConstants;
+import org.firstinspires.ftc.teamcode.util.general.lift.LiftController;
+import org.firstinspires.ftc.teamcode.util.general.lift.LiftCmd;
+import org.firstinspires.ftc.teamcode.util.statemachine.State;
 
 @TeleOp(group = GeneralConstants.SAMPLE_OPMODE)
 public class SimpleMecanumDrive extends OpMode {
 
     private SampleMecanumDrive drive;
+    public LiftController lift;
+    public String motorName = "motor";
+    public State.Sequence liftMachine;
+
 
     @Override
     public void init() {
+        lift = new LiftController(hardwareMap, motorName, false);
+        liftMachine = new State.Sequence();
         drive = new SampleMecanumDrive(hardwareMap);
         drive.setPoseEstimate(new Pose2d());
     }
@@ -43,5 +54,11 @@ public class SimpleMecanumDrive extends OpMode {
                         -gamepad1.right_stick_x
                 )
         );
+
+        //Lift Control
+        lift.update();
+        liftMachine.run();
+
     }
+
 }

@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.roadrunner.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.util.general.misc.GeneralConstants;
@@ -18,12 +19,20 @@ public class SimpleMecanumDrive extends OpMode {
 
     private SampleMecanumDrive drive;
     public LiftController lift;
-    public String motorName = "motor";
+    public Servo hookLeft;
+    public Servo hookRight;
+    public boolean isHookDown = false;
+    public int correctDown = 10;
+    public int correctUp = 120;
+    public String motorName = "liftMotor";
     public State.Sequence liftMachine;
+    private int liftPos = 0;
 
 
     @Override
     public void init() {
+        hookLeft = hardwareMap.servo.get("leftHook");
+        hookRight = hardwareMap.servo.get("rightHook");
         lift = new LiftController(hardwareMap, motorName, false);
         liftMachine = new State.Sequence();
         drive = new SampleMecanumDrive(hardwareMap);
@@ -56,8 +65,14 @@ public class SimpleMecanumDrive extends OpMode {
         );
 
         //Lift Control
+        if (gamepad1.dpad_up) liftPos += 1;
+        if (gamepad1.dpad_down) liftPos -= 1;
+        lift.setTargetPosition(liftPos);
         lift.update();
-        liftMachine.run();
+        //Hook Control
+        if (gamepad1.a) isHookDown = !isHookDown;
+        if (isHookDown == true) hookLeft = hookLeft;
+
 
     }
 

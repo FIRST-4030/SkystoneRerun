@@ -32,6 +32,10 @@ public class LiftController {
         motor.setPower(power);
     }
 
+    public void setTargetPosition(int position){
+        pidfController.setTargetPosition(position);
+    }
+
     public int getMotorPosition(){
         return motor.getCurrentPosition();
     }

@@ -13,34 +13,45 @@ import org.firstinspires.ftc.teamcode.util.general.misc.GeneralConstants;
 import org.firstinspires.ftc.teamcode.util.general.lift.LiftController;
 import org.firstinspires.ftc.teamcode.util.general.lift.LiftCmd;
 import org.firstinspires.ftc.teamcode.util.statemachine.State;
+import org.firstinspires.ftc.teamcode.util.general.input.DSController;
 
 @TeleOp(group = GeneralConstants.SAMPLE_OPMODE)
 public class SimpleMecanumDrive extends OpMode {
 
     private SampleMecanumDrive drive;
-    public LiftController lift;
+    public DSController inputHandler;
+
     public Servo hookLeft;
     public Servo hookRight;
     public boolean isHookDown = false;
-    public int correctDown = 10;
-    public int correctUp = 120;
+    public int incorrectDown = 10;
+    public int incorrectUp = 120;
+
+    public LiftController lift;
     public String motorName = "liftMotor";
     public State.Sequence liftMachine;
     private int liftPos = 0;
 
 
+
+
     @Override
     public void init() {
+        inputHandler = new DSController(gamepad1);
+
         hookLeft = hardwareMap.servo.get("leftHook");
         hookRight = hardwareMap.servo.get("rightHook");
+
         lift = new LiftController(hardwareMap, motorName, false);
         liftMachine = new State.Sequence();
+
         drive = new SampleMecanumDrive(hardwareMap);
         drive.setPoseEstimate(new Pose2d());
     }
 
     @Override
     public void loop() {
+        inputHandler.run();
         //Field-centric drive in a normal OpMode
         //Src: https://github.com/NoahBres/road-runner-quickstart/blob/advanced-examples/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/drive/advanced/TeleOpFieldCentric.java
 
@@ -70,8 +81,12 @@ public class SimpleMecanumDrive extends OpMode {
         lift.setTargetPosition(liftPos);
         lift.update();
         //Hook Control
-        if (gamepad1.a) isHookDown = !isHookDown;
-        if (isHookDown == true) hookLeft = hookLeft;
+        if (inputHandler.buttonA.pressed) isHookDown = !isHookDown;
+
+        if (isHookDown == true) hookLeft.setPosition(incorrectDown);
+        if (isHookDown == false) hookLeft.setPosition(incorrectUp);
+        hookRight.setPosition(hookLeft.getPosition());
+
 
 
     }

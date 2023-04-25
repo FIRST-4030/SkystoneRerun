@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.util.general.lift;
+package org.firstinspires.ftc.teamcode.util.general.subsystems.lift;
 
 import org.firstinspires.ftc.teamcode.util.statemachine.State;
 

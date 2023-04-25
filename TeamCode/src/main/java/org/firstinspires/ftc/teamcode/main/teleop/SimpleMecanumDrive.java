@@ -4,14 +4,11 @@ import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.roadrunner.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.util.general.misc.GeneralConstants;
-import org.firstinspires.ftc.teamcode.util.general.lift.LiftController;
-import org.firstinspires.ftc.teamcode.util.general.lift.LiftCmd;
+import org.firstinspires.ftc.teamcode.util.general.subsystems.lift.LiftController;
 import org.firstinspires.ftc.teamcode.util.statemachine.State;
 import org.firstinspires.ftc.teamcode.util.general.input.DSController;
 
@@ -51,7 +48,13 @@ public class SimpleMecanumDrive extends OpMode {
 
     @Override
     public void loop() {
-        inputHandler.run();
+        inputHandler.run(); //input
+        handleDrive(); //drive
+        handleLift(); //lift
+        handleHooks(); //hooks
+    }
+
+    public void handleDrive(){
         //Field-centric drive in a normal OpMode
         //Src: https://github.com/NoahBres/road-runner-quickstart/blob/advanced-examples/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/drive/advanced/TeleOpFieldCentric.java
 
@@ -61,8 +64,8 @@ public class SimpleMecanumDrive extends OpMode {
         // Create a vector from the gamepad x/y inputs
         // Then, rotate that vector by the inverse of that heading
         Vector2d input = new Vector2d(
-                -gamepad1.left_stick_y,
-                -gamepad1.left_stick_x
+                -inputHandler.leftStickY.getValue(),
+                -inputHandler.leftStickX.getValue()
         ).rotated(-poseEstimate.getHeading());
 
         // Pass in the rotated input + right stick value for rotation
@@ -71,24 +74,25 @@ public class SimpleMecanumDrive extends OpMode {
                 new Pose2d(
                         input.getX(),
                         input.getY(),
-                        -gamepad1.right_stick_x
+                        -inputHandler.rightStickX.getValue()
                 )
         );
+    }
 
+    public void handleLift(){
         //Lift Control
         if (gamepad1.dpad_up) liftPos += 1;
         if (gamepad1.dpad_down) liftPos -= 1;
         lift.setTargetPosition(liftPos);
         lift.update();
+    }
+
+    public void handleHooks(){
         //Hook Control
         if (inputHandler.buttonA.pressed) isHookDown = !isHookDown;
 
-        if (isHookDown == true) hookLeft.setPosition(incorrectDown);
-        if (isHookDown == false) hookLeft.setPosition(incorrectUp);
+        if (isHookDown) hookLeft.setPosition(incorrectDown);
+        if (!isHookDown) hookLeft.setPosition(incorrectUp);
         hookRight.setPosition(hookLeft.getPosition());
-
-
-
     }
-
 }

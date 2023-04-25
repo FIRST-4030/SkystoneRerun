@@ -152,22 +152,22 @@ public class DSController implements Runnable{
         }
     }
 
-    private Gamepad controller;
+    private volatile Gamepad controller;
 
-    public Analog
+    public volatile Analog
             rightStickX, rightStickY, rightTrigger,
             leftStickX, leftStickY, leftTrigger;
 
-    private Analog[] analogList;
+    private volatile Analog[] analogList;
 
-    public Digital
+    public volatile Digital
             rightStickButton, leftStickButton,
             rightBumper, leftBumper,
             buttonA, buttonB, buttonX, buttonY,
             dPadUp, dPadDown, dPadLeft, dPadRight,
             start, back, guide;
 
-    private Digital[] digitalList;
+    private volatile Digital[] digitalList;
 
     public DSController(Gamepad controller){
         this.controller = controller;

@@ -6,7 +6,8 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.roadrunner.drive.SampleMecanumDrive;
-import org.firstinspires.ftc.teamcode.util.general.lift.LiftController;
+import org.firstinspires.ftc.teamcode.util.general.input.DSController;
+import org.firstinspires.ftc.teamcode.util.general.subsystems.lift.LiftController;
 import org.firstinspires.ftc.teamcode.util.general.misc.GeneralConstants;
 
 @TeleOp(group = GeneralConstants.SAMPLE_OPMODE)
@@ -16,15 +17,19 @@ public class TeleOpLiftTest extends OpMode {
 
     private LiftController lift;
 
+    private DSController controller;
+
     @Override
     public void init() {
         drive = new SampleMecanumDrive(hardwareMap);
         drive.setPoseEstimate(new Pose2d());
         lift = new LiftController(hardwareMap, "liftMotor", false);
+        controller = new DSController(gamepad1);
     }
 
     @Override
     public void loop() {
+        controller.run();
         //Field-centric drive in a normal OpMode
         //Src: https://github.com/NoahBres/road-runner-quickstart/blob/advanced-examples/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/drive/advanced/TeleOpFieldCentric.java
 

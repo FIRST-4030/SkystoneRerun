@@ -1,14 +1,8 @@
-package org.firstinspires.ftc.teamcode.util.general;
+package org.firstinspires.ftc.teamcode.util.general.subsystems.claw;
 
 import com.acmerobotics.dashboard.config.Config;
-import com.acmerobotics.roadrunner.control.PIDCoefficients;
-import com.acmerobotics.roadrunner.control.PIDFController;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
-
-import org.firstinspires.ftc.teamcode.util.general.lift.LiftCmd;
 
 
 @Config
@@ -37,6 +31,9 @@ public class ClawController {
 
     public void toggleOpen() { open = !open; }
 
+    public void setOpen(boolean state){
+        open = state;
+    }
 
     /**
      * This method is always meant to be called within the OpMode to make sure the lift stays on the target

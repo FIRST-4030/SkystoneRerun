@@ -14,6 +14,12 @@ public class ClawController {
     private int CLAW_OPEN = 0; //PLACEHOLDER VALUE FOR CLAW OPEN POSITION
     private int CLAW_CLOSED = 0; //PLACEHOLDER VALUE FOR CLAW CLOSED POSITION
 
+    private int SWING_MIN = 0; //PLACEHOLDER VALUE FOR THE MINIMUM VALUE OF THE SWING SERVO
+
+    private int SWING_MAX = 0; //PLACEHOLDER VALUE FOR THE MAXIMUM VALUE OF THE SWING SERVO
+
+    private double swingPos = 0.5;
+
     private boolean open = false;
 
     public ClawController(HardwareMap hardwareMap, String clawServoName, String swingServoName){
@@ -24,6 +30,10 @@ public class ClawController {
     public boolean isBusy(){
         return busy;
     }
+
+    public double getSwingPos() { return swingPos; }
+
+    public void setSwingPos(double newSwingPos) { swingPos = newSwingPos; }
 
     public void setBusy(boolean nBool){
         this.busy = nBool;
@@ -38,5 +48,8 @@ public class ClawController {
     /**
      * This method is always meant to be called within the OpMode to make sure the lift stays on the target
      */
-    public void update(){ clawServo.setPosition( open ? CLAW_OPEN : CLAW_CLOSED ); }
+    public void update(){
+        clawServo.setPosition( open ? CLAW_OPEN : CLAW_CLOSED );
+        swingServo.setPosition(swingPos * (SWING_MAX-SWING_MIN) + SWING_MIN);
+    }
 }

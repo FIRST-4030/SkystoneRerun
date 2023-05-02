@@ -36,9 +36,9 @@ public class WheelMotorEncoderTest extends LinearOpMode {
         waitForStart();
         while (opModeIsActive() && !isStopRequested()) {
             multipleTelemetry.addData("Left Front Motor Encoder Position: ", leftFront.getCurrentPosition());
-            multipleTelemetry.addData("Left Rear Motor Encoder Position: ", leftFront.getCurrentPosition());
-            multipleTelemetry.addData("Right Front Motor Encoder Position: ", leftFront.getCurrentPosition());
-            multipleTelemetry.addData("Right Rear Motor Encoder Position: ", leftFront.getCurrentPosition());
+            multipleTelemetry.addData("Left Rear Motor Encoder Position: ", leftRear.getCurrentPosition());
+            multipleTelemetry.addData("Right Front Motor Encoder Position: ", rightFront.getCurrentPosition());
+            multipleTelemetry.addData("Right Rear Motor Encoder Position: ", rightRear.getCurrentPosition());
             multipleTelemetry.update();
         }
     }

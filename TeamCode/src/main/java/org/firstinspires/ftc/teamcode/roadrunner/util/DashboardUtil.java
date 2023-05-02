@@ -3,9 +3,11 @@ package org.firstinspires.ftc.teamcode.roadrunner.util;
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.canvas.Canvas;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.path.Path;
+import com.acmerobotics.roadrunner.trajectory.Trajectory;
 
 import java.util.List;
 
@@ -51,5 +53,17 @@ public class DashboardUtil {
         double x1 = pose.getX() + v.getX() / 2, y1 = pose.getY() + v.getY() / 2;
         double x2 = pose.getX() + v.getX(), y2 = pose.getY() + v.getY();
         canvas.strokeLine(x1, y1, x2, y2);
+    }
+
+    public static void drawTrajectory(Canvas canvas, Trajectory trajectory){
+        drawSampledPath(canvas, trajectory.getPath());
+    }
+
+    public static void previewTrajectories(FtcDashboard dashboard, Trajectory... trajectories){
+        TelemetryPacket packet = new TelemetryPacket();
+        Canvas canvas = packet.fieldOverlay();
+        for (Trajectory traj: trajectories) {
+            drawTrajectory(canvas, traj);
+        }
     }
 }

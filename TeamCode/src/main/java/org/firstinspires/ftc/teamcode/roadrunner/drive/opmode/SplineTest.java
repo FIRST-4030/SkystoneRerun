@@ -30,6 +30,7 @@ public class SplineTest extends LinearOpMode {
 
         Trajectory traj = drive.trajectoryBuilder(new Pose2d())
                 .splineTo(new Vector2d(distance, distance), 0)
+                .splineTo(new Vector2d(0, distance * 2), 0)
                 .build();
 
         drive.followTrajectory(traj);

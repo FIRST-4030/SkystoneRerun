@@ -20,16 +20,31 @@ public class SplineTest extends LinearOpMode {
 
     public static boolean reverseSpline = true;
     public static int waitTimeMs = 1000;
-    public static double distance = 30;
+    public static double x1 = 30;
+    public static double x2 = 80;
+    public static double y1 = 30;
+    public static double y2 = -10;
+
+    public static double endX = 0;
+    public static double endY = -15;
+    public static double endHeading = 180;
+
+    public static double heading1 = 45;
+    public static double heading2 = 270;
 
     @Override
     public void runOpMode() throws InterruptedException {
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
 
         Trajectory traj = drive.trajectoryBuilder(new Pose2d())
-                .splineTo(new Vector2d(distance, distance), 0)
-                .splineTo(new Vector2d(0, distance * 2), 0)
+                .splineTo(new Vector2d(x1, y1), Math.toRadians(heading1))
                 .build();
+
+        Trajectory traj2 = drive.trajectoryBuilder(traj.end())
+                .splineTo(new Vector2d(x2, y2), Math.toRadians(heading2))
+                .build();
+
+
 
         DashboardUtil.previewTrajectories(FtcDashboard.getInstance(), traj);
 
@@ -38,13 +53,15 @@ public class SplineTest extends LinearOpMode {
         if (isStopRequested()) return;
 
         drive.followTrajectory(traj);
+        sleep(waitTimeMs);
+        drive.followTrajectory(traj2);
 
         sleep(waitTimeMs);
 
         if (reverseSpline) {
             drive.followTrajectory(
-                    drive.trajectoryBuilder(traj.end(), true)
-                            .splineTo(new Vector2d(0, 0), Math.toRadians(180))
+                    drive.trajectoryBuilder(traj2.end(), false)
+                            .splineTo(new Vector2d(endX, endY), Math.toRadians(endHeading))
                             .build()
             );
         }

@@ -21,7 +21,7 @@ public class DriveConstants {
     /*
      * These are motor constants that should be listed online for your motors.
      */
-    public static final double TICKS_PER_REV = 430;
+    public static double TICKS_PER_REV = 520;
     public static final double MAX_RPM = 340;
 
     /*
@@ -33,8 +33,8 @@ public class DriveConstants {
      * from DriveVelocityPIDTuner.
      */
     public static final boolean RUN_USING_ENCODER = true;
-    public static PIDFCoefficients MOTOR_VELO_PID = new PIDFCoefficients(16, 0, 10,
-           /*getMotorVelocityF(MAX_RPM / 60 * TICKS_PER_REV)*/ 7.447469220246237);
+    public static PIDFCoefficients MOTOR_VELO_PID = new PIDFCoefficients(8, 0, 0,
+           getMotorVelocityF(MAX_RPM / 60 * TICKS_PER_REV) );
     // getMotorVelocityF(MAX_RPM / 60 * TICKS_PER_REV)
 
     /*

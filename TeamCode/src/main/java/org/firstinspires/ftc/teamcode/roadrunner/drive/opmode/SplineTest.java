@@ -22,7 +22,9 @@ public class SplineTest extends LinearOpMode {
     public static boolean reverseSpline = true;
     public static int waitTimeMs = 1000;
 
-    public static SplineConstants WAY_POINT1 = new SplineConstants( 30, 30, 45,1000 );
+    public static SplineConstants WAY_POINT1 = new SplineConstants( 30, 30, 45,1000);
+    public static SplineConstants WAY_POINT2 = new SplineConstants(30, 10, 12, 100);
+
 //    public static double x1 = 30;
     public static double x2 = 80;
 //    public static double y1 = 30;

@@ -65,5 +65,6 @@ public class DashboardUtil {
         for (Trajectory traj: trajectories) {
             drawTrajectory(canvas, traj);
         }
+        dashboard.sendTelemetryPacket(packet);
     }
 }

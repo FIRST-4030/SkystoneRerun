@@ -23,7 +23,6 @@ public class SplineTest extends LinearOpMode {
     public static int waitTimeMs = 1000;
 
     public static SplineConstants WAY_POINT1 = new SplineConstants( 30, 30, 45,1000);
-    public static SplineConstants WAY_POINT2 = new SplineConstants(30, 10, 12, 100);
 
 //    public static double x1 = 30;
     public static double x2 = 80;
@@ -49,24 +48,35 @@ public class SplineTest extends LinearOpMode {
                 .splineTo(new Vector2d(x2, y2), Math.toRadians(heading2))
                 .build();
 
-        DashboardUtil.previewTrajectories(FtcDashboard.getInstance(), traj1);
+        Trajectory traj3 = drive.trajectoryBuilder(traj2.end(), false)
+                .splineTo(new Vector2d(endX, endY), Math.toRadians(endHeading))
+                .build();
+
+        Trajectory combinedSpline = drive.trajectoryBuilder(new Pose2d())
+                .splineTo(new Vector2d(WAY_POINT1.x, WAY_POINT1.y), Math.toRadians(WAY_POINT1.heading))
+                .splineTo(new Vector2d(x2, y2), Math.toRadians(heading2))
+                .splineTo(new Vector2d(endX, endY), Math.toRadians(endHeading))
+                .build();
+
+        DashboardUtil.previewTrajectories(FtcDashboard.getInstance(), traj1, traj2, traj3);
 
         waitForStart();
 
         if (isStopRequested()) return;
 
+        /*
         drive.followTrajectory(traj1);
         sleep(WAY_POINT1.pauseTime);
         drive.followTrajectory(traj2);
 
+         */
+
+        drive.followTrajectory(combinedSpline);
+
         sleep(waitTimeMs);
 
         if (reverseSpline) {
-            drive.followTrajectory(
-                    drive.trajectoryBuilder(traj2.end(), false)
-                            .splineTo(new Vector2d(endX, endY), Math.toRadians(endHeading))
-                            .build()
-            );
+            drive.followTrajectory(traj3);
         }
     }
 }

@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.roadrunner.util;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.canvas.Canvas;
+import com.acmerobotics.dashboard.canvas.CanvasOp;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
@@ -62,8 +63,14 @@ public class DashboardUtil {
     public static void previewTrajectories(FtcDashboard dashboard, Trajectory... trajectories){
         TelemetryPacket packet = new TelemetryPacket();
         Canvas canvas = packet.fieldOverlay();
+        canvas.setStroke("#00CDFF7A"); //Orange
+        Pose2d lastEnd = trajectories[0].end();
         for (Trajectory traj: trajectories) {
+            if (!lastEnd.equals(traj.start())){
+                drawRobot(canvas, traj.start());
+            }
             drawTrajectory(canvas, traj);
+            drawRobot(canvas, traj.end());
         }
         dashboard.sendTelemetryPacket(packet);
     }

@@ -23,10 +23,10 @@ public class WheelMotorEncoderTest extends LinearOpMode {
 
         MultipleTelemetry multipleTelemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
-        leftFront = hardwareMap.get(DcMotorEx.class, "leftFront");
-        leftRear = hardwareMap.get(DcMotorEx.class, "leftRear");
-        rightRear = hardwareMap.get(DcMotorEx.class, "rightRear");
-        rightFront = hardwareMap.get(DcMotorEx.class, "rightFront");
+        leftFront = hardwareMap.get(DcMotorEx.class, "LF");
+        leftRear = hardwareMap.get(DcMotorEx.class, "LR");
+        rightRear = hardwareMap.get(DcMotorEx.class, "RR");
+        rightFront = hardwareMap.get(DcMotorEx.class, "RF");
 
         //enable BULK READ to mimic how roadrunner reads the values
         for (LynxModule module : hardwareMap.getAll(LynxModule.class)) {

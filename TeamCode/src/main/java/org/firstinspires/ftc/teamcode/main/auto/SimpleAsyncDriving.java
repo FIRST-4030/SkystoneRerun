@@ -9,6 +9,8 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 import org.firstinspires.ftc.teamcode.roadrunner.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.util.general.misc.GeneralConstants;
+import org.firstinspires.ftc.teamcode.util.general.rrutil.DriveCmd.DriveCmd;
+import org.firstinspires.ftc.teamcode.util.general.rrutil.DriveCmd.DriveCmdMaker;
 import org.firstinspires.ftc.teamcode.util.statemachine.Flag;
 import org.firstinspires.ftc.teamcode.util.statemachine.State;
 
@@ -19,35 +21,6 @@ such as printing telemetry, manipulating a servo/motor, or even queuing new stat
 @Config
 @Autonomous(group = GeneralConstants.SAMPLE_OPMODE)
 public class SimpleAsyncDriving extends OpMode {
-
-    //bad practice for inner classes as it clutters, but this is suppose to be specific to this example
-    private static class DriveCmd implements State{
-
-        public static SampleMecanumDrive drive;
-        private Trajectory internalTrajectory;
-
-        public DriveCmd(Trajectory trajectory){
-            this.internalTrajectory = trajectory;
-        }
-
-        @Override
-        public void init() {
-            drive.followTrajectoryAsync(internalTrajectory);
-        }
-
-        @Override
-        public void run() {
-            drive.update();
-        }
-
-        @Override
-        public void end() {}
-
-        @Override
-        public boolean isFinished() {
-            return !drive.isBusy();
-        }
-    }
 
     private State.Sequence masterStateSequence;
     private State.Sequence driveSequence;
@@ -63,7 +36,7 @@ public class SimpleAsyncDriving extends OpMode {
 
         drive = new SampleMecanumDrive(hardwareMap);
         drive.setPoseEstimate(new Pose2d());
-        DriveCmd.drive = drive;
+        DriveCmdMaker.init(drive);
         Flag<Flag.Basic> driveSyncFlag = new Flag<>(Flag.Basic.OFF);
 
         mainSequence = (new State.Sequence()).addAll(
@@ -112,22 +85,17 @@ public class SimpleAsyncDriving extends OpMode {
                 }
         );
 
-
-        driveSequence = (new State.Sequence()).addAll(
-                new DriveCmd(
-                        drive.trajectoryBuilder(drive.getPoseEstimate())
-                                .lineToSplineHeading(new Pose2d(0, DISTANCE, GeneralConstants.DEG2RAD * 90d))
-                                .lineTo(new Vector2d(0, 0))
-                                .build()
-                ),
-                new State.Wait(WAIT_TIME_SEC * GeneralConstants.SEC2MS), //CAN be simplified to one trajectory, but for this instance: no
-                new DriveCmd(
-                        drive.trajectoryBuilder(drive.getPoseEstimate())
-                                .lineToSplineHeading(new Pose2d(0, DISTANCE, GeneralConstants.DEG2RAD * 0d))
-                                .lineTo(new Vector2d(0, 0))
-                                .build()
-                ),
-                new State() {
+        driveSequence = DriveCmdMaker.getInstance()
+                .addDriveCmd(drive.trajectoryBuilder(drive.getPoseEstimate())
+                        .lineToSplineHeading(new Pose2d(0, DISTANCE, GeneralConstants.DEG2RAD * 90d))
+                        .lineTo(new Vector2d(0, 0))
+                        .build())
+                .addIntermediateState(new State.Wait(WAIT_TIME_SEC * GeneralConstants.SEC2MS)) //CAN be simplified to one trajectory, but for this instance: no
+                .addDriveCmd(drive.trajectoryBuilder(drive.getPoseEstimate())
+                        .lineToSplineHeading(new Pose2d(0, DISTANCE, GeneralConstants.DEG2RAD * 0d))
+                        .lineTo(new Vector2d(0, 0))
+                        .build())
+                .addIntermediateState(new State() {
                     @Override
                     public void init() {
                         driveSyncFlag.setCurrentState(Flag.Basic.ON);
@@ -145,9 +113,10 @@ public class SimpleAsyncDriving extends OpMode {
 
                     @Override
                     public boolean isFinished() {
-                        return false;
+                        return true;
                     }
-                });
+                })
+                .build();
 
         masterStateSequence = new State.Sequence();
         masterStateSequence.add(new State.AsyncGroup(mainSequence, driveSequence));

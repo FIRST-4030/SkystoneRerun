@@ -84,9 +84,9 @@ public interface State extends Runnable{
         }
     }
 
-    class WaitFor<T extends Flag<?>> implements State{
-        private T monitoredFlag;
-        private T targetFlag;
+    class WaitFor<T extends Enum<?>> implements State {
+        private final Flag<T> monitoredFlag;
+        private final T targetState;
         private boolean exit;
 
         /**
@@ -95,9 +95,9 @@ public interface State extends Runnable{
          * @param flag
          * @param target
          */
-        public WaitFor(T flag, T target){
+        public WaitFor(Flag<T> flag, T target){
             this.monitoredFlag = flag;
-            this.targetFlag = target;
+            this.targetState = target;
         }
 
         @Override
@@ -105,7 +105,11 @@ public interface State extends Runnable{
 
         @Override
         public void run() {
-            this.exit = monitoredFlag.getCurrentState().equals(targetFlag);
+            this.exit = test();
+        }
+
+        private boolean test(){
+            return monitoredFlag.getCurrentState().name().equals(targetState.name());
         }
 
         @Override

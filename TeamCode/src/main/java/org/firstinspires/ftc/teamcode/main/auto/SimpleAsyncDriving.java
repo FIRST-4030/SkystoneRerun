@@ -65,7 +65,6 @@ public class SimpleAsyncDriving extends OpMode {
         drive.setPoseEstimate(new Pose2d());
         DriveCmd.drive = drive;
         Flag<Flag.Basic> driveSyncFlag = new Flag<>(Flag.Basic.OFF);
-        Flag<Flag.Basic> synced = new Flag<>(Flag.Basic.ON);
 
         mainSequence = (new State.Sequence()).addAll(
                 new State() {
@@ -89,7 +88,7 @@ public class SimpleAsyncDriving extends OpMode {
                         return true;
                     }
                 },
-                new State.WaitFor<>(driveSyncFlag, synced),
+                new State.WaitFor<>(driveSyncFlag, Flag.Basic.ON),
                 new State() {
                     @Override
                     public void init() {

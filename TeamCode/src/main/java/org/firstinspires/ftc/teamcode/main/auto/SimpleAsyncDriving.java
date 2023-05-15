@@ -3,14 +3,12 @@ package org.firstinspires.ftc.teamcode.main.auto;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
-import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 import org.firstinspires.ftc.teamcode.roadrunner.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.util.general.misc.GeneralConstants;
-import org.firstinspires.ftc.teamcode.util.general.rrutil.DriveCmd.DriveCmd;
-import org.firstinspires.ftc.teamcode.util.general.rrutil.DriveCmd.DriveCmdMaker;
+import org.firstinspires.ftc.teamcode.util.general.rrutil.drivecmdmaker.DriveCmdMaker;
 import org.firstinspires.ftc.teamcode.util.statemachine.Flag;
 import org.firstinspires.ftc.teamcode.util.statemachine.State;
 

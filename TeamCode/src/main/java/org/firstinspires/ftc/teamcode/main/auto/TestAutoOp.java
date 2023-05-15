@@ -11,6 +11,8 @@ import org.firstinspires.ftc.teamcode.roadrunner.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.roadrunner.util.DashboardUtil;
 import org.firstinspires.ftc.teamcode.roadrunner.util.SplineConstants;
 import org.firstinspires.ftc.teamcode.util.general.misc.Pose2dWrapper;
+import org.firstinspires.ftc.teamcode.util.general.rrutil.drivecmdmaker.DriveCmdMaker;
+import org.firstinspires.ftc.teamcode.util.statemachine.State;
 
 /*
  * This is an example of a more complex path to really test the tuning.
@@ -22,6 +24,9 @@ public class TestAutoOp extends LinearOpMode {
     public static SplineConstants PLAT_POINT = new SplineConstants( -24.5, -47.75, 0,0);
     public static SplineConstants PLAT_POINT_HALF = new SplineConstants( -60, -45, Math.toRadians(270), 0);
 
+
+    //Sequence testing
+    public static State.Sequence driveSequence;
 
     /*
     //    public static double x1 = 30;
@@ -40,29 +45,37 @@ public class TestAutoOp extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
+
+
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
 
         drive.setPoseEstimate(startPose.toPose2d());
 
-        Trajectory traj = drive.trajectoryBuilder(drive.getPoseEstimate())
+        Trajectory traj1 = drive.trajectoryBuilder(drive.getPoseEstimate())
                 .splineTo(new Vector2d(PLAT_POINT_HALF.x, PLAT_POINT_HALF.y), Math.toRadians(PLAT_POINT_HALF.heading))
                 .splineTo(new Vector2d(PLAT_POINT.x, PLAT_POINT.y), Math.toRadians(PLAT_POINT.heading))
                 .build();
 
+        Trajectory traj2 = drive.trajectoryBuilder(traj1.end())
+                .lineTo(new Vector2d(PLAT_POINT_HALF.x, PLAT_POINT_HALF.y))
+                .build();
 
-        DashboardUtil.previewTrajectories(FtcDashboard.getInstance(), traj);
+
+        DashboardUtil.previewTrajectories(FtcDashboard.getInstance(), traj1);
+
+        DriveCmdMaker.init(drive);
+        DriveCmdMaker.getInstance()
+                .addDriveCmd(traj1)
+                .addIntermediateState(new State.Wait(1000)) //pause one second
+                .addDriveCmd(traj2);
+        driveSequence = DriveCmdMaker.getInstance().build();
 
         waitForStart();
-
-        if (isStopRequested()) return;
-
-        /*
-        drive.followTrajectory(traj1);
-        sleep(WAY_POINT1.pauseTime);
-        drive.followTrajectory(traj2);
-
-         */
-
-        drive.followTrajectory(traj);
+        driveSequence.init();
+        while (!isStopRequested()){
+            driveSequence.run();
+        }
+        driveSequence.end();
+        //drive.followTrajectory(traj); //run trajectory ONCE
     }
 }

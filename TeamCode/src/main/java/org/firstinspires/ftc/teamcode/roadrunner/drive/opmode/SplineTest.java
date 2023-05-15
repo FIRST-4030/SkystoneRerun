@@ -11,6 +11,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import org.firstinspires.ftc.teamcode.roadrunner.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.roadrunner.util.DashboardUtil;
 import org.firstinspires.ftc.teamcode.roadrunner.util.SplineConstants;
+import org.firstinspires.ftc.teamcode.util.general.misc.Pose2dWrapper;
 
 /*
  * This is an example of a more complex path to really test the tuning.
@@ -22,6 +23,7 @@ public class SplineTest extends LinearOpMode {
     public static boolean reverseSpline = true;
     public static int waitTimeMs = 1000;
 
+    public Pose2dWrapper startPose = new Pose2dWrapper(0, 0, 0);
     public static SplineConstants WAY_POINT1 = new SplineConstants( 30, 30, 45,1000);
 
 //    public static double x1 = 30;
@@ -39,6 +41,8 @@ public class SplineTest extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
+
+        drive.setPoseEstimate(startPose.toPose2d());
 
         Trajectory traj1 = drive.trajectoryBuilder(new Pose2d())
                 .splineTo(new Vector2d(WAY_POINT1.x, WAY_POINT1.y), Math.toRadians(WAY_POINT1.heading))

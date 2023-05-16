@@ -20,9 +20,12 @@ import org.firstinspires.ftc.teamcode.util.statemachine.State;
 @Config
 @Autonomous(group = "drive")
 public class TestAutoOp extends LinearOpMode {
-    public static Pose2dWrapper startPose = new Pose2dWrapper(-62, -11.5, 0);
-    public static SplineConstants PLAT_POINT = new SplineConstants( -24.5, -47.75, 0,0);
-    public static SplineConstants PLAT_POINT_HALF = new SplineConstants( -60, -45, Math.toRadians(270), 0);
+
+    //IMPORTANT: X increases upwards, Y increases to the left
+
+    public static Pose2dWrapper startPose = new Pose2dWrapper(-24.5, -55, 1.5707);
+    public static SplineConstants PLAT_POINT = new SplineConstants( -62, -11.5, 0,0);
+    public static SplineConstants PLAT_POINT_HALF = new SplineConstants( -60, -55, Math.toRadians(270), 0);
 
 
     //Sequence testing
@@ -60,8 +63,7 @@ public class TestAutoOp extends LinearOpMode {
                 .lineTo(new Vector2d(PLAT_POINT_HALF.x, PLAT_POINT_HALF.y))
                 .build();
 
-
-        DashboardUtil.previewTrajectories(FtcDashboard.getInstance(), traj1);
+        DashboardUtil.previewTrajectories(FtcDashboard.getInstance(), traj1, traj2);
 
         DriveCmdMaker.init(drive);
         DriveCmdMaker.getInstance()

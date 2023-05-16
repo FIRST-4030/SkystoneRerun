@@ -120,15 +120,11 @@ public class DashboardUtil {
     public static void previewTrajectories(FtcDashboard dashboard, Trajectory... trajectories){
         TelemetryPacket packet = new TelemetryPacket();
         Canvas canvas = packet.fieldOverlay();
-        Pose2d lastEnd = trajectories[0].end();
         for (Trajectory traj: trajectories) {
             canvas.setStroke(TRAJECTORY_PREVIEW_COLOR);
             drawTrajectory(canvas, traj);
-            if (!lastEnd.equals(traj.start())){
-                drawPose(canvas, traj.start());
-            }
+            drawPose(canvas, traj.start());
             drawPose(canvas, traj.end());
-            lastEnd = traj.end();
         }
         dashboard.sendTelemetryPacket(packet);
     }

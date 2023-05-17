@@ -2,11 +2,15 @@ package org.firstinspires.ftc.teamcode.main.testing;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
+import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 
+import org.firstinspires.ftc.teamcode.roadrunner.drive.SampleMecanumDrive;
+import org.firstinspires.ftc.teamcode.util.general.input.DSController;
 import org.firstinspires.ftc.teamcode.util.general.misc.GeneralConstants;
 
 /**
@@ -16,10 +20,16 @@ import org.firstinspires.ftc.teamcode.util.general.misc.GeneralConstants;
 @TeleOp(group = GeneralConstants.TEST_OPMODE)
 public class WheelMotorEncoderTest extends LinearOpMode {
 
+    private SampleMecanumDrive drive;
+    public DSController inputHandler;
     private static DcMotorEx leftFront, leftRear, rightFront, rightRear;
 
     @Override
     public void runOpMode() throws InterruptedException {
+        inputHandler = new DSController(gamepad1);
+
+        drive = new SampleMecanumDrive(hardwareMap);
+        drive.setPoseEstimate(new Pose2d());
 
         MultipleTelemetry multipleTelemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
@@ -40,6 +50,31 @@ public class WheelMotorEncoderTest extends LinearOpMode {
             multipleTelemetry.addData("Right Front Motor Encoder Position: ", rightFront.getCurrentPosition());
             multipleTelemetry.addData("Right Rear Motor Encoder Position: ", rightRear.getCurrentPosition());
             multipleTelemetry.update();
+
+            inputHandler.run();
+            handleDriver();
         }
+    }
+
+    public void handleDriver(){
+        // Read pose
+        Pose2d poseEstimate = drive.getPoseEstimate();
+
+        // Create a vector from the gamepad x/y inputs
+        // Then, rotate that vector by the inverse of that heading
+        Vector2d input = new Vector2d(
+                -inputHandler.leftStickY.getValue(),
+                -inputHandler.leftStickX.getValue()
+        ).rotated(-poseEstimate.getHeading());
+
+        // Pass in the rotated input + right stick value for rotation
+        // Rotation is not part of the rotated input thus must be passed in separately
+        drive.setWeightedDrivePower(
+                new Pose2d(
+                        input.getX(),
+                        input.getY(),
+                        -inputHandler.rightStickX.getValue()
+                )
+        );
     }
 }

@@ -4,9 +4,12 @@ import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
+import com.acmerobotics.roadrunner.trajectory.constraints.MecanumVelocityConstraint;
+import com.acmerobotics.roadrunner.trajectory.constraints.ProfileAccelerationConstraint;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
+import org.firstinspires.ftc.teamcode.roadrunner.drive.DriveConstants;
 import org.firstinspires.ftc.teamcode.roadrunner.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.roadrunner.util.DashboardUtil;
 import org.firstinspires.ftc.teamcode.util.general.misc.Pose2dWrapper;
@@ -29,6 +32,8 @@ public class PrecisionTest extends LinearOpMode {
 
             BASIC_FORWARD2 = 15,
             BASIC_TURN2 = 0.523598775598;
+
+    public static double SPLINE_MAX_VEL = 5, SPLINE_MAX_ACCEL = 5;
 
     public static Pose2dWrapper
             endPose1 = new Pose2dWrapper(0, 5, 1),
@@ -87,8 +92,8 @@ public class PrecisionTest extends LinearOpMode {
 
     public void testSplineDriveCmd(){
         Trajectory traj1 = drive.trajectoryBuilder(startPose)
-                .splineTo(endPose1.toPose2d().vec(), endPose1.heading)
-                .splineTo(endPose2.toPose2d().vec(), endPose2.heading)
+                .splineTo(endPose1.toPose2d().vec(), endPose1.heading, new MecanumVelocityConstraint(SPLINE_MAX_VEL, DriveConstants.TRACK_WIDTH), new ProfileAccelerationConstraint(SPLINE_MAX_ACCEL))
+                .splineTo(endPose2.toPose2d().vec(), endPose2.heading, new MecanumVelocityConstraint(SPLINE_MAX_VEL, DriveConstants.TRACK_WIDTH), new ProfileAccelerationConstraint(SPLINE_MAX_ACCEL))
                 .build();
 
         followTrajectory(traj1);

@@ -33,6 +33,7 @@ import org.firstinspires.ftc.teamcode.roadrunner.trajectorysequence.TrajectorySe
 import org.firstinspires.ftc.teamcode.roadrunner.trajectorysequence.TrajectorySequenceBuilder;
 import org.firstinspires.ftc.teamcode.roadrunner.trajectorysequence.TrajectorySequenceRunner;
 import org.firstinspires.ftc.teamcode.roadrunner.util.LynxModuleUtil;
+import org.firstinspires.ftc.teamcode.util.general.misc.Pose2dWrapper;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -138,6 +139,10 @@ public class SampleMecanumDrive extends MecanumDrive {
                 follower, HEADING_PID, batteryVoltageSensor,
                 lastEncPositions, lastEncVels, lastTrackingEncPositions, lastTrackingEncVels
         );
+    }
+
+    public TrajectoryBuilder trajectoryBuilder(Pose2dWrapper startPose){
+        return trajectoryBuilder(startPose.toPose2d());
     }
 
     public TrajectoryBuilder trajectoryBuilder(Pose2d startPose) {

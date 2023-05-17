@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.main.testing;
 
 import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
@@ -17,12 +18,15 @@ import org.firstinspires.ftc.teamcode.util.general.misc.GeneralConstants;
  * This class is primarily used to test if encoders on the motors work properly and report correctly to roadrunner systems
  * <br>To use it, run the OpMode and push the robot around and you will see what would roadrunner sees as encoder positions
  */
+@Config
 @TeleOp(group = GeneralConstants.TEST_OPMODE)
 public class WheelMotorEncoderTest extends LinearOpMode {
 
     private SampleMecanumDrive drive;
     public DSController inputHandler;
     private static DcMotorEx leftFront, leftRear, rightFront, rightRear;
+
+    public static double drivePower = 0.5;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -71,8 +75,8 @@ public class WheelMotorEncoderTest extends LinearOpMode {
         // Rotation is not part of the rotated input thus must be passed in separately
         drive.setWeightedDrivePower(
                 new Pose2d(
-                        input.getX(),
-                        input.getY(),
+                        input.getX() * drivePower,
+                        input.getY() * drivePower,
                         -inputHandler.rightStickX.getValue()
                 )
         );

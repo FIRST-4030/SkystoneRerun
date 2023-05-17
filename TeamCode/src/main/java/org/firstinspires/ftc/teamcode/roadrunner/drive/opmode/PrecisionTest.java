@@ -66,12 +66,15 @@ public class PrecisionTest extends LinearOpMode {
     public void testBasicDriveCmd(){
         Trajectory traj1 = drive.trajectoryBuilder(startPose)
                 .forward(BASIC_FORWARD1)
+                .build();
+
+        Trajectory traj2 = drive.trajectoryBuilder(traj1.end())
                 .back(BASIC_BACKWARD1)
                 .build();
 
         drive.turn(BASIC_TURN1);
 
-        Trajectory traj2 = drive.trajectoryBuilder(new Pose2d(traj1.end().vec(), BASIC_TURN1))
+        Trajectory traj3 = drive.trajectoryBuilder(new Pose2d(traj1.end().vec(), BASIC_TURN1))
                 .forward(BASIC_FORWARD2)
                 .build();
 
@@ -79,6 +82,7 @@ public class PrecisionTest extends LinearOpMode {
 
         followTrajectory(traj1);
         followTrajectory(traj2);
+        followTrajectory(traj3);
     }
 
     public void testSplineDriveCmd(){

@@ -4,9 +4,12 @@ import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
+import com.acmerobotics.roadrunner.trajectory.constraints.MecanumVelocityConstraint;
+import com.acmerobotics.roadrunner.trajectory.constraints.ProfileAccelerationConstraint;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
+import org.firstinspires.ftc.teamcode.roadrunner.drive.DriveConstants;
 import org.firstinspires.ftc.teamcode.roadrunner.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.roadrunner.util.DashboardUtil;
 import org.firstinspires.ftc.teamcode.roadrunner.util.SplineConstants;
@@ -23,9 +26,10 @@ public class TestAutoOp extends LinearOpMode {
 
     //IMPORTANT: X increases upwards, Y increases to the left
 
-    public static Pose2dWrapper startPose = new Pose2dWrapper(-24.5, -55, 1.5707);
-    public static SplineConstants PLAT_POINT = new SplineConstants( -62, -11.5, 0,0);
-    public static SplineConstants PLAT_POINT_HALF = new SplineConstants( -60, -55, Math.toRadians(270), 0);
+    public static Pose2dWrapper startPose = new Pose2dWrapper(-12, -64, 1.5707);
+    public static SplineConstants PLAT_POINT = new SplineConstants( -32, -12, 1.5707,0);
+
+    public static double SPLINE_MAX_VEL = 5, SPLINE_MAX_ACCEL = 5;
 
 
     //Sequence testing
@@ -55,28 +59,24 @@ public class TestAutoOp extends LinearOpMode {
         drive.setPoseEstimate(startPose.toPose2d());
 
         Trajectory traj1 = drive.trajectoryBuilder(drive.getPoseEstimate())
-                .splineTo(new Vector2d(PLAT_POINT_HALF.x, PLAT_POINT_HALF.y), Math.toRadians(PLAT_POINT_HALF.heading))
-                .splineTo(new Vector2d(PLAT_POINT.x, PLAT_POINT.y), Math.toRadians(PLAT_POINT.heading))
+                .splineTo(new Vector2d(PLAT_POINT.x, PLAT_POINT.y), PLAT_POINT.heading, new MecanumVelocityConstraint(SPLINE_MAX_VEL, DriveConstants.TRACK_WIDTH), new ProfileAccelerationConstraint(SPLINE_MAX_ACCEL))
                 .build();
 
-        Trajectory traj2 = drive.trajectoryBuilder(traj1.end())
-                .lineTo(new Vector2d(PLAT_POINT_HALF.x, PLAT_POINT_HALF.y))
-                .build();
 
-        DashboardUtil.previewTrajectories(FtcDashboard.getInstance(), traj1, traj2);
+        DashboardUtil.previewTrajectories(FtcDashboard.getInstance(), traj1);
 
         DriveCmdMaker.init(drive);
         DriveCmdMaker.getInstance()
                 .addDriveCmd(traj1)
-                .addIntermediateState(new State.Wait(1000)) //pause one second
-                .addDriveCmd(traj2);
+                .addIntermediateState(new State.Wait(1000)); //pause one second
         driveSequence = DriveCmdMaker.getInstance().build();
 
         waitForStart();
         driveSequence.init();
-        while (!isStopRequested()){
-            driveSequence.run();
-        }
+        //while (!isStopRequested()){
+
+        //}
+        drive.followTrajectory(traj1);
         driveSequence.end();
         //drive.followTrajectory(traj); //run trajectory ONCE
     }

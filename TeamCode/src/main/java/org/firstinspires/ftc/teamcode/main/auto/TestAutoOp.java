@@ -63,7 +63,7 @@ public class TestAutoOp extends LinearOpMode {
                 .splineTo(new Vector2d(PLAT_POINT.x, PLAT_POINT.y), PLAT_POINT.heading, new MecanumVelocityConstraint(SPLINE_MAX_VEL, DriveConstants.TRACK_WIDTH), new ProfileAccelerationConstraint(SPLINE_MAX_ACCEL))
                 .build();
         Trajectory traj2 = drive.trajectoryBuilder(traj1.end())
-                .splineTo(new Vector2d(PLAT_POINT_2.x, PLAT_POINT_2.y), PLAT_POINT_2.heading, new MecanumVelocityConstraint(SPLINE_MAX_VEL, DriveConstants.TRACK_WIDTH), new ProfileAccelerationConstraint(SPLINE_MAX_ACCEL))
+                .lineToLinearHeading(new Pose2dWrapper(PLAT_POINT_2.x, PLAT_POINT_2.y, PLAT_POINT_2.heading).toPose2d())
                 .build();
 
 

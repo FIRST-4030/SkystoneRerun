@@ -123,8 +123,8 @@ public class DashboardUtil {
         for (Trajectory traj: trajectories) {
             canvas.setStroke(TRAJECTORY_PREVIEW_COLOR);
             drawTrajectory(canvas, traj);
-            drawRobot(canvas, traj.start());
-            drawRobot(canvas, traj.end());
+            drawPose(canvas, traj.start());
+            drawPose(canvas, traj.end());
         }
         dashboard.sendTelemetryPacket(packet);
     }

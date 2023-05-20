@@ -27,7 +27,8 @@ public class TestAutoOp extends LinearOpMode {
     //IMPORTANT: X increases upwards, Y increases to the left
 
     public static Pose2dWrapper startPose = new Pose2dWrapper(-12, -64, 1.5707);
-    public static SplineConstants PLAT_POINT = new SplineConstants( -32, -12, 1.5707,0);
+    public static SplineConstants PLAT_POINT = new SplineConstants( -60, -30, 1.5707,0);
+    public static SplineConstants PLAT_POINT_2 = new SplineConstants( -32, -36, 3.14159,0);
 
     public static double SPLINE_MAX_VEL = 5, SPLINE_MAX_ACCEL = 5;
 
@@ -61,23 +62,21 @@ public class TestAutoOp extends LinearOpMode {
         Trajectory traj1 = drive.trajectoryBuilder(drive.getPoseEstimate())
                 .splineTo(new Vector2d(PLAT_POINT.x, PLAT_POINT.y), PLAT_POINT.heading, new MecanumVelocityConstraint(SPLINE_MAX_VEL, DriveConstants.TRACK_WIDTH), new ProfileAccelerationConstraint(SPLINE_MAX_ACCEL))
                 .build();
+        Trajectory traj2 = drive.trajectoryBuilder(drive.getPoseEstimate())
+                .splineTo(new Vector2d(PLAT_POINT_2.x, PLAT_POINT_2.y), PLAT_POINT_2.heading, new MecanumVelocityConstraint(SPLINE_MAX_VEL, DriveConstants.TRACK_WIDTH), new ProfileAccelerationConstraint(SPLINE_MAX_ACCEL))
+                .build();
 
 
-        DashboardUtil.previewTrajectories(FtcDashboard.getInstance(), traj1);
-
-        DriveCmdMaker.init(drive);
-        DriveCmdMaker.getInstance()
-                .addDriveCmd(traj1)
-                .addIntermediateState(new State.Wait(1000)); //pause one second
-        driveSequence = DriveCmdMaker.getInstance().build();
+        DashboardUtil.previewTrajectories(FtcDashboard.getInstance(), traj1, traj2);
 
         waitForStart();
-        driveSequence.init();
         //while (!isStopRequested()){
 
         //}
         drive.followTrajectory(traj1);
-        driveSequence.end();
+        sleep(1000);
+        drive.followTrajectory(traj2);
+
         //drive.followTrajectory(traj); //run trajectory ONCE
     }
 }

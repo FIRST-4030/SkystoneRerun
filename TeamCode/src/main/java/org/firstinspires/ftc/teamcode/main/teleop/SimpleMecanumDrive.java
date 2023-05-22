@@ -36,8 +36,8 @@ public class SimpleMecanumDrive extends OpMode {
     public void init() {
         inputHandler = new DSController(gamepad1);
 
-        hookLeft = hardwareMap.servo.get("leftHook");
-        hookRight = hardwareMap.servo.get("rightHook");
+        hookLeft = hardwareMap.servo.get("HL");
+        hookRight = hardwareMap.servo.get("HR");
 
         lift = new LiftController(hardwareMap, motorName, false);
         liftMachine = new State.Sequence();

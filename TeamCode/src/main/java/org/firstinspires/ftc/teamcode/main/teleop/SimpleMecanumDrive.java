@@ -4,6 +4,7 @@ import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.roadrunner.drive.SampleMecanumDrive;
@@ -12,7 +13,7 @@ import org.firstinspires.ftc.teamcode.util.general.subsystems.lift.LiftControlle
 import org.firstinspires.ftc.teamcode.util.statemachine.State;
 import org.firstinspires.ftc.teamcode.util.general.input.DSController;
 
-@TeleOp(group = GeneralConstants.SAMPLE_OPMODE)
+@TeleOp(name = "RerunDrive", group = GeneralConstants.SAMPLE_OPMODE)
 public class SimpleMecanumDrive extends OpMode {
 
     private SampleMecanumDrive drive;
@@ -20,16 +21,18 @@ public class SimpleMecanumDrive extends OpMode {
 
     public Servo hookLeft;
     public Servo hookRight;
+    public DcMotor IntakeLeft;
+    public DcMotor IntakeRight;
     public boolean isHookDown = false;
-    public int incorrectDown = 10;
-    public int incorrectUp = 120;
+    public boolean isIntaking = false;
+    public double offset = 0.2;
+    public double incorrectDown = 0.75;
+    public double incorrectUp = 0.201;
 
     public LiftController lift;
-    public String motorName = "liftMotor";
+    public String motorName = "lift";
     public State.Sequence liftMachine;
     private int liftPos = 0;
-
-
 
 
     @Override
@@ -39,7 +42,10 @@ public class SimpleMecanumDrive extends OpMode {
         hookLeft = hardwareMap.servo.get("HL");
         hookRight = hardwareMap.servo.get("HR");
 
-        lift = new LiftController(hardwareMap, motorName, false);
+        IntakeLeft = hardwareMap.dcMotor.get("CL");
+        IntakeRight = hardwareMap.dcMotor.get("CR");
+
+        lift = new LiftController(hardwareMap, motorName, true, DcMotor.RunMode.RUN_USING_ENCODER);
         liftMachine = new State.Sequence();
 
         drive = new SampleMecanumDrive(hardwareMap);
@@ -52,6 +58,7 @@ public class SimpleMecanumDrive extends OpMode {
         handleDrive(); //drive
         handleLift(); //lift
         handleHooks(); //hooks
+        handleIntake(); //intake
     }
 
     public void handleDrive(){
@@ -81,18 +88,30 @@ public class SimpleMecanumDrive extends OpMode {
 
     public void handleLift(){
         //Lift Control
-        if (gamepad1.dpad_up) liftPos += 1;
-        if (gamepad1.dpad_down) liftPos -= 1;
-        lift.setTargetPosition(liftPos);
+        if (inputHandler.dPadUp.held) liftPos = 1;
+        if (inputHandler.dPadDown.held) liftPos = -1;
+        //lift.goToPos(liftPos);
+        lift.setPower(liftPos);
+        liftPos = 0;
         lift.update();
+
     }
 
     public void handleHooks(){
         //Hook Control
         if (inputHandler.buttonA.pressed) isHookDown = !isHookDown;
 
+
         if (isHookDown) hookLeft.setPosition(incorrectDown);
         if (!isHookDown) hookLeft.setPosition(incorrectUp);
-        hookRight.setPosition(hookLeft.getPosition());
+
+        hookRight.setPosition(1-offset-hookLeft.getPosition());
+    }
+
+    public void handleIntake() {
+        if (inputHandler.buttonB.pressed) isIntaking = !isIntaking;
+        if (isIntaking) IntakeLeft.setPower(1);
+        if (!isIntaking) IntakeLeft.setPower(0);
+        IntakeRight.setPower(IntakeLeft.getPower()*-1);
     }
 }

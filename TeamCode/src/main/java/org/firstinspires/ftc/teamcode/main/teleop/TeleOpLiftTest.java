@@ -4,6 +4,7 @@ import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.roadrunner.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.util.general.input.DSController;
@@ -23,7 +24,7 @@ public class TeleOpLiftTest extends OpMode {
     public void init() {
         drive = new SampleMecanumDrive(hardwareMap);
         drive.setPoseEstimate(new Pose2d());
-        lift = new LiftController(hardwareMap, "liftMotor", false);
+        lift = new LiftController(hardwareMap, "liftMotor", true, DcMotor.RunMode.RUN_TO_POSITION);
         controller = new DSController(gamepad1);
     }
 
@@ -55,11 +56,6 @@ public class TeleOpLiftTest extends OpMode {
 
         //Lift
         lift.setPower(1);
-        if(gamepad1.a){
-            lift.setTargetPosition(1000);
-        }else{
-            lift.setTargetPosition(0);
-        }
         lift.update();
     }
 }

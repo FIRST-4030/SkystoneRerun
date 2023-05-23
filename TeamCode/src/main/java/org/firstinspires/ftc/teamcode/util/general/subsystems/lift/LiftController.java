@@ -15,12 +15,12 @@ public class LiftController {
 
     public static PIDCoefficients pidCoefficients = new PIDCoefficients();
     protected PIDFController pidfController;
-    public LiftController(HardwareMap hardwareMap, String motorName, boolean invertRight){
+    public LiftController(HardwareMap hardwareMap, String motorName, boolean invertRight, DcMotor.RunMode runMode){
         motor = hardwareMap.dcMotor.get(motorName);
 
         motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motor.setTargetPosition(0);
-        motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        motor.setMode(runMode);
         motor.setDirection(invertRight ? DcMotorSimple.Direction.REVERSE : DcMotorSimple.Direction.FORWARD);
         motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
@@ -32,8 +32,13 @@ public class LiftController {
         motor.setPower(power);
     }
 
-    public void setTargetPosition(int position){
-        pidfController.setTargetPosition(position);
+    //public void setTargetPosition(int position){
+    //    pidfController.setTargetPosition(position);
+    //}
+
+    public void goToPos(int pos){
+        motor.setTargetPosition(pos);
+        motor.setPower(1);
     }
 
     public int getMotorPosition(){

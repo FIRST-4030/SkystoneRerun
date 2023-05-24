@@ -5,6 +5,7 @@ import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.roadrunner.drive.SampleMecanumDrive;
@@ -21,18 +22,24 @@ public class SimpleMecanumDrive extends OpMode {
 
     public Servo hookLeft;
     public Servo hookRight;
+    public Servo claw;
+    public Servo swing;
     public DcMotor IntakeLeft;
     public DcMotor IntakeRight;
+    public DcMotor liftMotor;
     public boolean isHookDown = false;
     public boolean isIntaking = false;
     public double offset = 0.2;
     public double incorrectDown = 0.75;
     public double incorrectUp = 0.201;
+    public boolean clawBool = false;
+    public double swingInc = 0.01;
 
     public LiftController lift;
     public String motorName = "lift";
     public State.Sequence liftMachine;
     private int liftPos = 0;
+    public static double speed = 1000;
 
 
     @Override
@@ -44,8 +51,17 @@ public class SimpleMecanumDrive extends OpMode {
 
         IntakeLeft = hardwareMap.dcMotor.get("CL");
         IntakeRight = hardwareMap.dcMotor.get("CR");
+        liftMotor = hardwareMap.dcMotor.get(motorName);
 
-        lift = new LiftController(hardwareMap, motorName, true, DcMotor.RunMode.RUN_USING_ENCODER);
+        claw = hardwareMap.servo.get("claw");
+        swing = hardwareMap.servo.get("swing");
+
+        liftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        liftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        liftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+        liftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+        lift = new LiftController(hardwareMap, motorName, true, DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         liftMachine = new State.Sequence();
 
         drive = new SampleMecanumDrive(hardwareMap);
@@ -57,8 +73,15 @@ public class SimpleMecanumDrive extends OpMode {
         inputHandler.run(); //input
         handleDrive(); //drive
         handleLift(); //lift
+
         handleHooks(); //hooks
         handleIntake(); //intake
+        handleClaw(); //claw
+        handleSwing(); //swing
+
+        telemetry.addData("Lift Encoder: ", liftMotor.getCurrentPosition());
+        telemetry.addData("Speed: ", speed);
+        telemetry.addData("Target: ", liftPos);
     }
 
     public void handleDrive(){
@@ -88,13 +111,14 @@ public class SimpleMecanumDrive extends OpMode {
 
     public void handleLift(){
         //Lift Control
-        if (inputHandler.dPadUp.held) liftPos = 1;
-        if (inputHandler.dPadDown.held) liftPos = -1;
+        if (inputHandler.dPadUp.held) liftPos = (int) speed;
+        if (inputHandler.dPadDown.held) liftPos = (int) -speed;
         //lift.goToPos(liftPos);
-        lift.setPower(liftPos);
-        liftPos = 0;
-        lift.update();
+        //lift.setPower(liftPos);
+        liftMotor.setPower(liftPos);
 
+        if(!inputHandler.dPadDown.getState() || !inputHandler.dPadUp.getState()) liftPos = 0;
+        //lift.update();
     }
 
     public void handleHooks(){
@@ -113,5 +137,17 @@ public class SimpleMecanumDrive extends OpMode {
         if (isIntaking) IntakeLeft.setPower(1);
         if (!isIntaking) IntakeLeft.setPower(0);
         IntakeRight.setPower(IntakeLeft.getPower()*-1);
+    }
+
+    public void handleClaw() {
+        if(inputHandler.dPadLeft.released) {
+            clawBool = !clawBool;
+        }
+        if(clawBool) {claw.setPosition(0.2);}
+        else {claw.setPosition(0.8);}
+
+    }
+    public void handleSwing() {
+        swing.setPosition(swing.getPosition() + inputHandler.rightStickY.getValue() * swingInc);
     }
 }

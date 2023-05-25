@@ -143,8 +143,8 @@ public class SimpleMecanumDrive extends OpMode {
         if(inputHandler.dPadLeft.released) {
             clawBool = !clawBool;
         }
-        if(clawBool) {claw.setPosition(0.2);}
-        else {claw.setPosition(0.8);}
+        if(clawBool) {claw.setPosition(1);}
+        else {claw.setPosition(0.5);}
 
     }
     public void handleSwing() {

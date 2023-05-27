@@ -6,8 +6,10 @@ import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.acmerobotics.roadrunner.trajectory.constraints.MecanumVelocityConstraint;
 import com.acmerobotics.roadrunner.trajectory.constraints.ProfileAccelerationConstraint;
+import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryVelocityConstraint;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.roadrunner.drive.DriveConstants;
 import org.firstinspires.ftc.teamcode.roadrunner.drive.SampleMecanumDrive;
@@ -28,13 +30,14 @@ public class TestAutoOp extends LinearOpMode {
 
     public static Pose2dWrapper startPose = new Pose2dWrapper(-12, -64, 1.5707);
     public static SplineConstants PLAT_POINT = new SplineConstants( -60, -30, 1.5707,0);
-    public static SplineConstants PLAT_POINT_2 = new SplineConstants( -32, -36, 3.14159,0);
-
+    public static SplineConstants PLAT_POINT_2 = new SplineConstants( -32, -45, 3.14159,0);
+    public static Pose2dWrapper bridgePose = new Pose2dWrapper(25, -45, 1.5707);
     public static double SPLINE_MAX_VEL = 60, SPLINE_MAX_ACCEL = 30;
+    public Servo claw;
 
 
-    //Sequence testing
-    public static State.Sequence driveSequence;
+
+
 
     /*
     //    public static double x1 = 30;
@@ -54,7 +57,7 @@ public class TestAutoOp extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
 
-
+        claw = hardwareMap.servo.get("claw");
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
 
         drive.setPoseEstimate(startPose.toPose2d());
@@ -65,18 +68,22 @@ public class TestAutoOp extends LinearOpMode {
         Trajectory traj2 = drive.trajectoryBuilder(traj1.end())
                 .lineToLinearHeading(new Pose2dWrapper(PLAT_POINT_2.x, PLAT_POINT_2.y, PLAT_POINT_2.heading).toPose2d())
                 .build();
+        Trajectory traj3 = drive.trajectoryBuilder(traj2.end())
+                .lineToLinearHeading(bridgePose.toPose2d())
+                .build();
 
 
-        DashboardUtil.previewTrajectories(FtcDashboard.getInstance(), traj1, traj2);
+        DashboardUtil.previewTrajectories(FtcDashboard.getInstance(), traj1, traj2, traj3);
 
         waitForStart();
-        //while (!isStopRequested()){
 
-        //}
         drive.followTrajectory(traj1);
-        sleep(1000);
+        claw.setPosition(0.2);
+        sleep(500);
         drive.followTrajectory(traj2);
+        claw.setPosition(0.8);
+        sleep(150);
 
-        //drive.followTrajectory(traj); //run trajectory ONCE
+
     }
 }

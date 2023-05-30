@@ -33,6 +33,9 @@ public class SimpleMecanumDrive extends OpMode {
     public double incorrectDown = 0.75;
     public double incorrectUp = 0.201;
     public boolean clawBool = false;
+
+    public static double clawOpen = 1;
+    public static double clawClose = 0.5;
     public double swingInc = 0.01;
 
     public LiftController lift;
@@ -143,8 +146,10 @@ public class SimpleMecanumDrive extends OpMode {
         if(inputHandler.dPadLeft.released) {
             clawBool = !clawBool;
         }
-        if(clawBool) {claw.setPosition(1);}
-        else {claw.setPosition(0.5);}
+        if(clawBool) {claw.setPosition(clawOpen);}
+        else {claw.setPosition(clawClose);}
+
+        telemetry.addData("Claw Pos: ", claw.getPosition());
 
     }
     public void handleSwing() {

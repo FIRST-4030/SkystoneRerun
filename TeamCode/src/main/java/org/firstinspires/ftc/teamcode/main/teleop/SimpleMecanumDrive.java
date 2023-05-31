@@ -1,5 +1,8 @@
 package org.firstinspires.ftc.teamcode.main.teleop;
 
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
@@ -10,15 +13,16 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.roadrunner.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.util.general.misc.GeneralConstants;
-import org.firstinspires.ftc.teamcode.util.general.subsystems.lift.LiftController;
-import org.firstinspires.ftc.teamcode.util.statemachine.State;
 import org.firstinspires.ftc.teamcode.util.general.input.DSController;
 
+@Config
 @TeleOp(name = "RerunDrive", group = GeneralConstants.SAMPLE_OPMODE)
 public class SimpleMecanumDrive extends OpMode {
 
     private SampleMecanumDrive drive;
+
     public DSController inputHandler;
+    public DSController inputHandler2;
 
     public Servo hookLeft;
     public Servo hookRight;
@@ -27,27 +31,29 @@ public class SimpleMecanumDrive extends OpMode {
     public DcMotor IntakeLeft;
     public DcMotor IntakeRight;
     public DcMotor liftMotor;
+
     public boolean isHookDown = false;
     public boolean isIntaking = false;
-    public double offset = 0.2;
-    public double incorrectDown = 0.75;
-    public double incorrectUp = 0.201;
+
+    public static double hookOffset = 0.2;
+    public static double hookDown = 0.75;
+    public static double hookUp = 0.201;
     public boolean clawBool = false;
 
     public static double clawOpen = 1;
     public static double clawClose = 0.5;
-    public double swingInc = 0.01;
+    public static double swingInc = 0.0075;
 
-    public LiftController lift;
     public String motorName = "lift";
-    public State.Sequence liftMachine;
     private int liftPos = 0;
     public static double speed = 1000;
 
+    public MultipleTelemetry multiTelemetry;
 
     @Override
     public void init() {
         inputHandler = new DSController(gamepad1);
+        inputHandler2 = new DSController(gamepad2);
 
         hookLeft = hardwareMap.servo.get("HL");
         hookRight = hardwareMap.servo.get("HR");
@@ -64,16 +70,16 @@ public class SimpleMecanumDrive extends OpMode {
         liftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         liftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        lift = new LiftController(hardwareMap, motorName, true, DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        liftMachine = new State.Sequence();
-
         drive = new SampleMecanumDrive(hardwareMap);
         drive.setPoseEstimate(new Pose2d());
+
+        multiTelemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
     }
 
     @Override
     public void loop() {
         inputHandler.run(); //input
+        inputHandler2.run();
         handleDrive(); //drive
         handleLift(); //lift
 
@@ -82,17 +88,15 @@ public class SimpleMecanumDrive extends OpMode {
         handleClaw(); //claw
         handleSwing(); //swing
 
-        telemetry.addData("Lift Encoder: ", liftMotor.getCurrentPosition());
-        telemetry.addData("Speed: ", speed);
-        telemetry.addData("Target: ", liftPos);
+        multiTelemetry.addData("Lift Encoder: ", liftMotor.getCurrentPosition());
+        multiTelemetry.addData("Speed: ", speed);
+        multiTelemetry.addData("Target: ", liftPos);
     }
 
     public void handleDrive(){
-        //Field-centric drive in a normal OpMode
-        //Src: https://github.com/NoahBres/road-runner-quickstart/blob/advanced-examples/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/drive/advanced/TeleOpFieldCentric.java
-
         // Read pose
         Pose2d poseEstimate = drive.getPoseEstimate();
+        double scalar = 1 - inputHandler.rightTrigger.getValue();
 
         // Create a vector from the gamepad x/y inputs
         // Then, rotate that vector by the inverse of that heading
@@ -108,19 +112,19 @@ public class SimpleMecanumDrive extends OpMode {
                         input.getX(),
                         input.getY(),
                         -inputHandler.rightStickX.getValue()
-                )
+                ).times(scalar)
         );
     }
 
     public void handleLift(){
         //Lift Control
-        if (inputHandler.dPadUp.held) liftPos = (int) speed;
-        if (inputHandler.dPadDown.held) liftPos = (int) -speed;
+        if (inputHandler2.buttonY.held) liftPos = (int) speed;
+        if (inputHandler2.buttonA.held) liftPos = (int) -speed;
         //lift.goToPos(liftPos);
         //lift.setPower(liftPos);
         liftMotor.setPower(liftPos);
 
-        if(!inputHandler.dPadDown.getState() || !inputHandler.dPadUp.getState()) liftPos = 0;
+        if(!inputHandler2.buttonA.getState() || !inputHandler.buttonY.getState()) liftPos = 0;
         //lift.update();
     }
 
@@ -129,10 +133,10 @@ public class SimpleMecanumDrive extends OpMode {
         if (inputHandler.buttonA.pressed) isHookDown = !isHookDown;
 
 
-        if (isHookDown) hookLeft.setPosition(incorrectDown);
-        if (!isHookDown) hookLeft.setPosition(incorrectUp);
+        if (isHookDown) hookLeft.setPosition(hookDown);
+        if (!isHookDown) hookLeft.setPosition(hookUp);
 
-        hookRight.setPosition(1-offset-hookLeft.getPosition());
+        hookRight.setPosition(1- hookOffset -hookLeft.getPosition());
     }
 
     public void handleIntake() {
@@ -143,16 +147,15 @@ public class SimpleMecanumDrive extends OpMode {
     }
 
     public void handleClaw() {
-        if(inputHandler.dPadLeft.released) {
+        if(inputHandler2.rightBumper.released) {
             clawBool = !clawBool;
         }
         if(clawBool) {claw.setPosition(clawOpen);}
         else {claw.setPosition(clawClose);}
 
-        telemetry.addData("Claw Pos: ", claw.getPosition());
-
+        multiTelemetry.addData("Claw Pos: ", claw.getPosition());
     }
     public void handleSwing() {
-        swing.setPosition(swing.getPosition() + inputHandler.rightStickY.getValue() * swingInc);
+        swing.setPosition(swing.getPosition() + (inputHandler2.dPadLeft.held ? 1 : inputHandler2.dPadRight.held ? -2 : 0) * swingInc);
     }
 }

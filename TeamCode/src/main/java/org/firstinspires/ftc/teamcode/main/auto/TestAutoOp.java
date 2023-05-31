@@ -28,13 +28,15 @@ public class TestAutoOp extends LinearOpMode {
 
     //IMPORTANT: X increases upwards, Y increases to the left
 
-    public static Pose2dWrapper startPose = new Pose2dWrapper(-12, -64, 1.5707);
+    public static Pose2dWrapper startPose = new Pose2dWrapper(-36, -64, 1.5707);
     public static SplineConstants PLAT_POINT = new SplineConstants( -60, -30, 1.5707,0);
     public static SplineConstants PLAT_POINT_2 = new SplineConstants( -32, -45, 3.14159,0);
-    public static Pose2dWrapper bridgePose = new Pose2dWrapper(25, -45, 1.5707);
-    public static double SPLINE_MAX_VEL = 60, SPLINE_MAX_ACCEL = 30;
+    public static Pose2dWrapper bridgePose = new Pose2dWrapper(25, -45, 3.14159);
+    public static double SPLINE_MAX_VEL = 30, SPLINE_MAX_ACCEL = 30;
     public Servo claw;
-
+    public Servo HR;
+    public Servo HL;
+    public boolean hookBool;
 
 
 
@@ -58,6 +60,8 @@ public class TestAutoOp extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
 
         claw = hardwareMap.servo.get("claw");
+        HR = hardwareMap.servo.get("HR");
+        HL = hardwareMap.servo.get("HL");
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
 
         drive.setPoseEstimate(startPose.toPose2d());
@@ -78,12 +82,23 @@ public class TestAutoOp extends LinearOpMode {
         waitForStart();
 
         drive.followTrajectory(traj1);
-        claw.setPosition(0.2);
+        handleHooks(true);
         sleep(500);
         drive.followTrajectory(traj2);
-        claw.setPosition(0.8);
-        sleep(150);
+        handleHooks(false);
+        sleep(500);
 
 
+
+    }
+    public void handleHooks(boolean hookBool){
+        //Hook Control
+
+
+
+        if (hookBool) HL.setPosition(0.75);
+        if (!hookBool) HL.setPosition(0.2);
+
+        HR.setPosition(1-0.2-HL.getPosition());
     }
 }

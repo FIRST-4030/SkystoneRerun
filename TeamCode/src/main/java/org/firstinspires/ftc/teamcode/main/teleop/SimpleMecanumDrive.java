@@ -37,18 +37,18 @@ public class SimpleMecanumDrive extends OpMode {
 
     public static double hookOffset = 0.2;
     public static double hookDown = 0.75;
-    public static double hookUp = 0.201;
+    public static double hookUp = 0.23;
     public boolean clawBool = false;
 
     public static double clawOpen = 1;
     public static double clawClose = 0.5;
-    public static double swingInc = 0.0075;
+    public static double swingIncrement = 0.0017;
 
     public String motorName = "lift";
     private int liftPos = 0;
-    public static double speed = 1;
+    public static double liftSpeed = 1;
     public static double upperLimit = 0.6;
-    public static double lowerLimit = 0.4;
+    public static double lowerLimit = 0.338;
 
     public MultipleTelemetry multiTelemetry;
 
@@ -91,8 +91,10 @@ public class SimpleMecanumDrive extends OpMode {
         handleSwing(); //swing
 
         multiTelemetry.addData("Lift Encoder: ", liftMotor.getCurrentPosition());
-        multiTelemetry.addData("Speed: ", speed);
-        multiTelemetry.addData("Target: ", liftPos);
+        multiTelemetry.addData("Lift Speed: ", liftSpeed);
+        multiTelemetry.addData("Swing Position: ", swing.getPosition());
+        multiTelemetry.addData("Swing Speed: ", swingIncrement);
+        multiTelemetry.addData("Claw Pos: ", claw.getPosition());
     }
 
     public void handleDrive(){
@@ -120,8 +122,8 @@ public class SimpleMecanumDrive extends OpMode {
 
     public void handleLift(){
         //Lift Control
-        if (inputHandler2.buttonY.held) liftPos = (int) speed;
-        if (inputHandler2.buttonA.held) liftPos = (int) -speed;
+        if (inputHandler2.buttonY.held) liftPos = (int) liftSpeed;
+        if (inputHandler2.buttonA.held) liftPos = (int) -liftSpeed;
         //lift.goToPos(liftPos);
         //lift.setPower(liftPos);
         liftMotor.setPower(liftPos);
@@ -154,13 +156,11 @@ public class SimpleMecanumDrive extends OpMode {
         }
         if(clawBool) {claw.setPosition(clawOpen);}
         else {claw.setPosition(clawClose);}
-
-        multiTelemetry.addData("Claw Pos: ", claw.getPosition());
     }
     public void handleSwing() {
         double currentPos = swing.getPosition();
         double velocity = inputHandler2.rightTrigger.getValue() - inputHandler2.leftTrigger.getValue();
-        double output = Math.max(Math.min(currentPos + velocity * swingInc, upperLimit), lowerLimit);
+        double output = Math.max(Math.min(currentPos + velocity * swingIncrement, upperLimit), lowerLimit);
         swing.setPosition(output);
     }
 }

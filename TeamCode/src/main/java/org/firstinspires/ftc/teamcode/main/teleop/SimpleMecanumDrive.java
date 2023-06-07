@@ -11,6 +11,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 
+import org.firstinspires.ftc.teamcode.main.testing.HookHandler;
 import org.firstinspires.ftc.teamcode.roadrunner.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.util.general.misc.GeneralConstants;
 import org.firstinspires.ftc.teamcode.util.general.input.DSController;
@@ -52,6 +53,8 @@ public class SimpleMecanumDrive extends OpMode {
 
     public MultipleTelemetry multiTelemetry;
 
+    public static HookHandler hookController;
+
     @Override
     public void init() {
         inputHandler = new DSController(gamepad1);
@@ -59,6 +62,7 @@ public class SimpleMecanumDrive extends OpMode {
 
         hookLeft = hardwareMap.servo.get("HL");
         hookRight = hardwareMap.servo.get("HR");
+        hookController = new HookHandler();
 
         IntakeLeft = hardwareMap.dcMotor.get("CL");
         IntakeRight = hardwareMap.dcMotor.get("CR");
@@ -80,11 +84,11 @@ public class SimpleMecanumDrive extends OpMode {
 
     @Override
     public void loop() {
-        inputHandler.run(); //input
-        inputHandler2.run();
+        inputHandler.run(); //controller 1
+        inputHandler2.run(); //controller 2
+
         handleDrive(); //drive
         handleLift(); //lift
-
         handleHooks(); //hooks
         handleIntake(); //intake
         handleClaw(); //claw
@@ -133,14 +137,22 @@ public class SimpleMecanumDrive extends OpMode {
     }
 
     public void handleHooks(){
+        /*
         //Hook Control
-        if (inputHandler.buttonA.pressed) isHookDown = !isHookDown;
+
 
 
         if (isHookDown) hookLeft.setPosition(hookDown);
         if (!isHookDown) hookLeft.setPosition(hookUp);
 
         hookRight.setPosition(1- hookOffset -hookLeft.getPosition());
+
+         */
+        if (inputHandler.buttonA.pressed) isHookDown = !isHookDown;
+        double[] hookPosititon = hookController.updatePosition(isHookDown);
+
+        hookLeft.setPosition(hookPosititon[0]);
+        hookRight.setPosition(hookPosititon[1]);
     }
 
     public void handleIntake() {

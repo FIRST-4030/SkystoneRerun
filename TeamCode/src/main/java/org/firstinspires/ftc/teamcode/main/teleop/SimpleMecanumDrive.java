@@ -46,7 +46,9 @@ public class SimpleMecanumDrive extends OpMode {
 
     public String motorName = "lift";
     private int liftPos = 0;
-    public static double speed = 1000;
+    public static double speed = 0.0001;
+    public static double upperLimit = 0.6;
+    public static double lowerLimit = 0.4;
 
     public MultipleTelemetry multiTelemetry;
 
@@ -156,6 +158,9 @@ public class SimpleMecanumDrive extends OpMode {
         multiTelemetry.addData("Claw Pos: ", claw.getPosition());
     }
     public void handleSwing() {
-        swing.setPosition(swing.getPosition() + (inputHandler2.dPadLeft.held ? 1 : inputHandler2.dPadRight.held ? -2 : 0) * swingInc);
+        double currentPos = swing.getPosition();
+        double velocity = inputHandler2.rightTrigger.getValue() - inputHandler2.leftTrigger.getValue();
+        double output = Math.max(Math.min(currentPos + velocity * speed, upperLimit), lowerLimit);
+        swing.setPosition(output);
     }
 }

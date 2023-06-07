@@ -46,7 +46,7 @@ public class SimpleMecanumDrive extends OpMode {
 
     public String motorName = "lift";
     private int liftPos = 0;
-    public static double speed = 0.0001;
+    public static double speed = 1;
     public static double upperLimit = 0.6;
     public static double lowerLimit = 0.4;
 
@@ -160,7 +160,7 @@ public class SimpleMecanumDrive extends OpMode {
     public void handleSwing() {
         double currentPos = swing.getPosition();
         double velocity = inputHandler2.rightTrigger.getValue() - inputHandler2.leftTrigger.getValue();
-        double output = Math.max(Math.min(currentPos + velocity * speed, upperLimit), lowerLimit);
+        double output = Math.max(Math.min(currentPos + velocity * swingInc, upperLimit), lowerLimit);
         swing.setPosition(output);
     }
 }

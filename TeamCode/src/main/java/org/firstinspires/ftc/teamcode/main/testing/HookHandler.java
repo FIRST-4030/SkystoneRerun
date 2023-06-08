@@ -5,8 +5,8 @@ import com.acmerobotics.dashboard.config.Config;
 @Config
 public class HookHandler {
 
-    public static double leftHookUp = 0.23, leftHookDown = 0.75;
-    public static double rightHookUp = 0.75, rightHookDown = 0;
+    public static double leftHookUp = 0.23, leftHookDown = 0.73;
+    public static double rightHookUp = 0.69, rightHookDown = 0;
 
 
     /**

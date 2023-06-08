@@ -11,6 +11,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.Servo;
 
+import org.firstinspires.ftc.teamcode.main.testing.HookHandler;
 import org.firstinspires.ftc.teamcode.roadrunner.drive.DriveConstants;
 import org.firstinspires.ftc.teamcode.roadrunner.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.roadrunner.util.DashboardUtil;
@@ -37,7 +38,7 @@ public class TestAutoOp extends LinearOpMode {
     public Servo claw;
     public Servo HR;
     public Servo HL;
-    public boolean hookBool;
+    public static HookHandler hookController;
 
 
 
@@ -63,6 +64,8 @@ public class TestAutoOp extends LinearOpMode {
         claw = hardwareMap.servo.get("claw");
         HR = hardwareMap.servo.get("HR");
         HL = hardwareMap.servo.get("HL");
+        hookController = new HookHandler();
+
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
 
         drive.setPoseEstimate(startPose.toPose2d());
@@ -94,12 +97,17 @@ public class TestAutoOp extends LinearOpMode {
     }
     public void handleHooks(boolean hookBool){
         //Hook Control
+        double[] hookPosititon = hookController.updatePosition(hookBool);
 
+        HL.setPosition(hookPosititon[0]);
+        HR.setPosition(hookPosititon[1]);
 
-
+        /*
         if (hookBool) HL.setPosition(0.75);
         if (!hookBool) HL.setPosition(0.2);
 
         HR.setPosition(1-0.2-HL.getPosition());
+
+         */
     }
 }

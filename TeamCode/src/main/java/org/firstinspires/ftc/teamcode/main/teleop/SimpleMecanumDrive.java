@@ -55,6 +55,8 @@ public class SimpleMecanumDrive extends OpMode {
 
     public static HookHandler hookController;
 
+    public static boolean swingIgnoreLimits = false;
+
     @Override
     public void init() {
         inputHandler = new DSController(gamepad1);
@@ -172,7 +174,15 @@ public class SimpleMecanumDrive extends OpMode {
     public void handleSwing() {
         double currentPos = swing.getPosition();
         double velocity = inputHandler2.rightTrigger.getValue() - inputHandler2.leftTrigger.getValue();
-        double output = Math.max(Math.min(currentPos + velocity * swingIncrement, upperLimit), lowerLimit);
+        if (inputHandler2.leftStickButton.pressed){
+            swingIgnoreLimits = !swingIgnoreLimits;
+        }
+        double output;
+        if (!swingIgnoreLimits) {
+            output = Math.max(Math.min(currentPos + velocity * swingIncrement, upperLimit), lowerLimit);
+        } else {
+            output = Math.max(Math.min(currentPos + velocity * swingIncrement, 0.65), 0.3);
+        }
         swing.setPosition(output);
     }
 }

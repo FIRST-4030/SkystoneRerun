@@ -1,0 +1,50 @@
+package org.firstinspires.ftc.teamcode.roadrunner.util;
+
+import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.acmerobotics.roadrunner.geometry.Vector2d;
+import com.acmerobotics.roadrunner.trajectory.constraints.MecanumVelocityConstraint;
+import com.acmerobotics.roadrunner.trajectory.constraints.ProfileAccelerationConstraint;
+
+import org.firstinspires.ftc.teamcode.roadrunner.drive.DriveConstants;
+import org.firstinspires.ftc.teamcode.util.general.misc.Pose2dWrapper;
+
+public class MecanumEndpoint {
+
+    public Pose2dWrapper pose;
+    public double velocityConstraint, accelerationConstraint;
+
+    public MecanumEndpoint(){
+        this.pose = new Pose2dWrapper(0, 0, 0);
+        this.velocityConstraint = DriveConstants.MAX_VEL;
+        this.accelerationConstraint = DriveConstants.MAX_ACCEL;
+    }
+
+    public Vector2d getPos(){
+        return new Vector2d(pose.x, pose.y);
+    }
+
+    public double getHeading(){
+        return pose.heading;
+    }
+
+    public Vector2d getDir(){
+        return pose.toPose2d().headingVec();
+    }
+
+    public Pose2d getPose(){
+        return pose.toPose2d();
+    }
+
+    public MecanumVelocityConstraint getMaxVel(){
+        return new MecanumVelocityConstraint(velocityConstraint, DriveConstants.TRACK_WIDTH);
+    }
+
+    public ProfileAccelerationConstraint getMaxAccel(){
+        return new ProfileAccelerationConstraint(accelerationConstraint);
+    }
+
+    public void invertSides(){
+        pose.y = -pose.y;
+        pose.heading = (pose.heading + 2 * Math.PI) % 2 * Math.PI;
+    }
+}

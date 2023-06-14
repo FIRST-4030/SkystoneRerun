@@ -19,6 +19,18 @@ public class MecanumEndpoint {
         this.accelerationConstraint = DriveConstants.MAX_ACCEL;
     }
 
+    public MecanumEndpoint(double posX, double posY, double heading){
+        this.pose = new Pose2dWrapper(posX, posY, heading);
+        this.velocityConstraint = DriveConstants.MAX_VEL;
+        this.accelerationConstraint = DriveConstants.MAX_ACCEL;
+    }
+
+    public MecanumEndpoint(double posX, double posY, double heading, double velocityConstraint, double accelerationConstraint){
+        this.pose = new Pose2dWrapper(posX, posY, heading);
+        this.velocityConstraint = velocityConstraint;
+        this.accelerationConstraint = accelerationConstraint;
+    }
+
     public Vector2d getPos(){
         return new Vector2d(pose.x, pose.y);
     }

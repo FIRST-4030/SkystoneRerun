@@ -57,6 +57,8 @@ public class TestAutoOp extends LinearOpMode {
     public static double upperLimit = 0.6;
     public static double lowerLimit = 0.338;
 
+    public static double delay1 = 100, delay2 = 1000, delay3 = 100;
+
     /*
     //    public static double x1 = 30;
     public static double x2 = 80;
@@ -148,16 +150,16 @@ public class TestAutoOp extends LinearOpMode {
         handleClaw(true); //ensure claw is open
         handleSwing(lowerLimit);
 
-        sleep(100);
+        sleep((long) delay1);
 
         handleClaw(false);
         handleSwing(upperLimit);
 
-        sleep(1000);
+        sleep((long) delay2);
 
         handleClaw(true);
 
-        sleep(100);
+        sleep((long) delay3);
 
         handleSwing(0.35);
         //end of collecting first block
@@ -183,9 +185,7 @@ public class TestAutoOp extends LinearOpMode {
     }
 
     public void handleSwing(double position){
-        double currentPos = swing.getPosition();
-
-        double output = Math.max(Math.min(currentPos, upperLimit), lowerLimit);
+        double output = Math.max(Math.min(position, upperLimit), lowerLimit);
 
         swing.setPosition(output);
     }

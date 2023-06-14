@@ -9,6 +9,7 @@ import com.acmerobotics.roadrunner.trajectory.constraints.ProfileAccelerationCon
 import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryVelocityConstraint;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.main.testing.HookHandler;
@@ -30,26 +31,31 @@ public class TestAutoOp extends LinearOpMode {
 
 
     //IMPORTANT: X increases upwards, Y increases to the left
+    //Rotation is CCW and 0 is on the x axis
 
     public static Pose2dWrapper startPose = new Pose2dWrapper(-36, -64, 1.5707);
-    public static MecanumEndpoint PLAT_POINT = new MecanumEndpoint( -60, -30, 1.5707, 30, 30);
+    public static MecanumEndpoint PLAT_POINT = new MecanumEndpoint( -59, -30, 1.5707, 30, 30);
     public static MecanumEndpoint PLAT_POINT_2 = new MecanumEndpoint( -32, -45, 3.14159);
 
     public static MecanumEndpoint MID_POINT = new MecanumEndpoint(0, -40, 3.14159);
 
-    public static MecanumEndpoint BLOCK_POINT = new MecanumEndpoint( 11, -32, 3.534);
-    public static MecanumEndpoint BLOCK_POINT_2 = new MecanumEndpoint(18, -26, 3.534);
-    public static MecanumEndpoint BLOCK_POINT_3 = new MecanumEndpoint(27, -32, 3.534);
-    public static MecanumEndpoint BLOCK_POINT_4 = new MecanumEndpoint(35, -32, 3.534);
+    public static MecanumEndpoint BLOCK_POINT = new MecanumEndpoint( 12, -25, 3.534);
+    public static MecanumEndpoint BLOCK_POINT_2 = new MecanumEndpoint(20, -25, 3.534);
+    public static MecanumEndpoint BLOCK_POINT_3 = new MecanumEndpoint(27, -26, 3.534);
+    public static MecanumEndpoint BLOCK_POINT_4 = new MecanumEndpoint(35, -26, 3.534);
 
     //public static double SPLINE_MAX_VEL = 30, SPLINE_MAX_ACCEL = 30;
     public Servo claw;
+    public Servo swing;
     public Servo HR;
     public Servo HL;
+    public DcMotor IntakeLeft;
+    public DcMotor IntakeRight;
+
     public static HookHandler hookController;
 
-
-
+    public static double upperLimit = 0.6;
+    public static double lowerLimit = 0.338;
 
     /*
     //    public static double x1 = 30;
@@ -73,6 +79,9 @@ public class TestAutoOp extends LinearOpMode {
         HR = hardwareMap.servo.get("HR");
         HL = hardwareMap.servo.get("HL");
         hookController = new HookHandler();
+        IntakeLeft = hardwareMap.dcMotor.get("CL");
+        IntakeRight = hardwareMap.dcMotor.get("CR");
+        swing = hardwareMap.servo.get("swing");
 
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
 
@@ -113,6 +122,8 @@ public class TestAutoOp extends LinearOpMode {
 
         DashboardUtil.previewTrajectories(FtcDashboard.getInstance(), traj1, traj2, traj4, traj5, traj6, traj7, traj8);
 
+        handleClaw(true);
+        handleIntake(false);
         waitForStart();
 
         drive.followTrajectory(traj1);
@@ -120,26 +131,62 @@ public class TestAutoOp extends LinearOpMode {
         sleep(250);
         drive.followTrajectory(traj2);
         handleHooks(false);
+
+        //Start collecting blocks
+        //goto block
         drive.followTrajectory(traj3);
         drive.followTrajectory(traj4);
+
+        handleIntake(true); //go to first block and turn on intake
+        handleSwing(0.35);
+
+        //return to platform
         drive.followTrajectory(traj5);
         drive.followTrajectory(traj6);
+
+        handleIntake(false); //stop intake
+        handleClaw(true); //ensure claw is open
+        handleSwing(lowerLimit);
+
+        sleep(100);
+
+        handleClaw(false);
+        handleSwing(upperLimit);
+
+        sleep(1000);
+
+        handleClaw(true);
+
+        sleep(100);
+
+        handleSwing(0.35);
+        //end of collecting first block
+
+        //start of collecting second block
         drive.followTrajectory(traj7);
         drive.followTrajectory(traj8);
     }
     public void handleHooks(boolean hookBool){
         //Hook Control
-        double[] hookPosititon = hookController.updatePosition(hookBool);
+        double[] hookPosition = hookController.updatePosition(hookBool);
+        HL.setPosition(hookPosition[0]);
+        HR.setPosition(hookPosition[1]);
+    }
 
-        HL.setPosition(hookPosititon[0]);
-        HR.setPosition(hookPosititon[1]);
+    public void handleIntake(boolean isOn){
+        IntakeLeft.setPower(isOn ? 1 : 0);
+        IntakeRight.setPower(IntakeLeft.getPower());
+    }
 
-        /*
-        if (hookBool) HL.setPosition(0.75);
-        if (!hookBool) HL.setPosition(0.2);
+    public void handleClaw(boolean clawOpen){
+        claw.setPosition(clawOpen ? 1 : 0.5);
+    }
 
-        HR.setPosition(1-0.2-HL.getPosition());
+    public void handleSwing(double position){
+        double currentPos = swing.getPosition();
 
-         */
+        double output = Math.max(Math.min(currentPos, upperLimit), lowerLimit);
+
+        swing.setPosition(output);
     }
 }

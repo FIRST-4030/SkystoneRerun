@@ -39,7 +39,7 @@ public class TestAutoOp extends LinearOpMode {
 
     public static MecanumEndpoint MID_POINT = new MecanumEndpoint(0, -40, 3.14159);
 
-    public static MecanumEndpoint BLOCK_POINT = new MecanumEndpoint( 12, -25, 3.534);
+    public static MecanumEndpoint BLOCK_POINT = new MecanumEndpoint( 12, -25, 3.926);
     public static MecanumEndpoint BLOCK_POINT_2 = new MecanumEndpoint(20, -25, 3.534);
     public static MecanumEndpoint BLOCK_POINT_3 = new MecanumEndpoint(27, -26, 3.534);
     public static MecanumEndpoint BLOCK_POINT_4 = new MecanumEndpoint(35, -26, 3.534);
@@ -139,29 +139,30 @@ public class TestAutoOp extends LinearOpMode {
         drive.followTrajectory(traj3);
         drive.followTrajectory(traj4);
 
+        handleSwing(0.345);
+        sleep(100);
         handleIntake(true); //go to first block and turn on intake
-        handleSwing(0.35);
+        handleSwing(lowerLimit);
+        sleep(100);
+        handleClaw(false);
 
         //return to platform
         drive.followTrajectory(traj5);
         drive.followTrajectory(traj6);
 
-        handleIntake(false); //stop intake
-        handleClaw(true); //ensure claw is open
-        handleSwing(lowerLimit);
-
         sleep((long) delay1);
 
-        handleClaw(false);
         handleSwing(upperLimit);
 
         sleep((long) delay2);
 
         handleClaw(true);
-
+        sleep(200);
+        handleSwing(0.345);
+        handleIntake(false);
         sleep((long) delay3);
 
-        handleSwing(0.35);
+
         //end of collecting first block
 
         //start of collecting second block
@@ -177,11 +178,11 @@ public class TestAutoOp extends LinearOpMode {
 
     public void handleIntake(boolean isOn){
         IntakeLeft.setPower(isOn ? 1 : 0);
-        IntakeRight.setPower(IntakeLeft.getPower());
+        IntakeRight.setPower(-IntakeLeft.getPower());
     }
 
     public void handleClaw(boolean clawOpen){
-        claw.setPosition(clawOpen ? 1 : 0.5);
+        claw.setPosition(!clawOpen ? 1 : 0.5);
     }
 
     public void handleSwing(double position){

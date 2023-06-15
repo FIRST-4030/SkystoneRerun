@@ -125,7 +125,7 @@ public class TestAutoOp extends LinearOpMode {
         DashboardUtil.previewTrajectories(FtcDashboard.getInstance(), traj1, traj2, traj4, traj5, traj6, traj7, traj8);
 
         handleClaw(true);
-        handleIntake(false);
+
         waitForStart();
 
         drive.followTrajectory(traj1);
@@ -136,12 +136,13 @@ public class TestAutoOp extends LinearOpMode {
 
         //Start collecting blocks
         //goto block
+        handleIntake(true);
         drive.followTrajectory(traj3);
         drive.followTrajectory(traj4);
 
         handleSwing(0.345);
         sleep(100);
-        handleIntake(true); //go to first block and turn on intake
+        //handleIntake(true); //go to first block and turn on intake
         handleSwing(lowerLimit);
         sleep(100);
         handleClaw(false);

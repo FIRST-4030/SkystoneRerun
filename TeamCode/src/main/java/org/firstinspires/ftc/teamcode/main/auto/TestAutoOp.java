@@ -41,7 +41,7 @@ public class TestAutoOp extends LinearOpMode {
 
     public static MecanumEndpoint BLOCK_POINT = new MecanumEndpoint( 21, -30, 3.84);
     public static MecanumEndpoint BLOCK_POINT_2 = new MecanumEndpoint(20, -25, 3.534);
-    public static MecanumEndpoint BLOCK_POINT_3 = new MecanumEndpoint(27, -26, 3.534);
+    public static MecanumEndpoint BLOCK_POINT_3 = MID_POINT;
     public static MecanumEndpoint BLOCK_POINT_4 = new MecanumEndpoint(35, -26, 3.534);
 
     //public static double SPLINE_MAX_VEL = 30, SPLINE_MAX_ACCEL = 30;
@@ -57,7 +57,7 @@ public class TestAutoOp extends LinearOpMode {
     public static double upperLimit = 0.6;
     public static double lowerLimit = 0.338;
 
-    public static double delay1 = 100, delay2 = 1000, delay3 = 100;
+    public static double delay1 = 100, delay2 = 1000, delay3 = 1000;
 
     /*
     //    public static double x1 = 30;
@@ -117,12 +117,12 @@ public class TestAutoOp extends LinearOpMode {
                 .lineToLinearHeading(MID_POINT.getPose())
                 .build();
 
-        Trajectory traj8 = drive.trajectoryBuilder(traj7.end())
+        /*Trajectory traj8 = drive.trajectoryBuilder(traj7.end())
                 .lineToLinearHeading(BLOCK_POINT_2.getPose())
                 .build();
+        */
 
-
-        DashboardUtil.previewTrajectories(FtcDashboard.getInstance(), traj1, traj2, traj4, traj5, traj6, traj7, traj8);
+        DashboardUtil.previewTrajectories(FtcDashboard.getInstance(), traj1, traj2, traj4, traj5, traj6, traj7);
 
         handleClaw(true);
 
@@ -162,13 +162,12 @@ public class TestAutoOp extends LinearOpMode {
         handleSwing(0.345);
         handleIntake(false);
         sleep((long) delay3);
+        drive.followTrajectory(traj7);
 
 
         //end of collecting first block
 
         //start of collecting second block
-        drive.followTrajectory(traj7);
-        drive.followTrajectory(traj8);
     }
     public void handleHooks(boolean hookBool){
         //Hook Control

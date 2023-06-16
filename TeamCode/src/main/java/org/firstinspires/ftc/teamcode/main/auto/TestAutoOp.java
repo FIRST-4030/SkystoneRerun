@@ -18,6 +18,7 @@ import org.firstinspires.ftc.teamcode.roadrunner.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.roadrunner.util.DashboardUtil;
 import org.firstinspires.ftc.teamcode.roadrunner.util.MecanumEndpoint;
 import org.firstinspires.ftc.teamcode.roadrunner.util.SplineConstants;
+import org.firstinspires.ftc.teamcode.util.general.input.DSController;
 import org.firstinspires.ftc.teamcode.util.general.misc.Pose2dWrapper;
 import org.firstinspires.ftc.teamcode.util.general.rrutil.drivecmdmaker.DriveCmdMaker;
 import org.firstinspires.ftc.teamcode.util.statemachine.State;
@@ -34,14 +35,14 @@ public class TestAutoOp extends LinearOpMode {
     //Rotation is CCW and 0 is on the x axis
 
     public static Pose2dWrapper startPose = new Pose2dWrapper(-36, -62, 1.5707);
-    public static MecanumEndpoint PLAT_POINT = new MecanumEndpoint( -56, -30, 1.5707, 30, 30);
+    public static MecanumEndpoint PLAT_POINT = new MecanumEndpoint( -56, -28, 1.5707, 30, 30);
     public static MecanumEndpoint PLAT_POINT_2 = new MecanumEndpoint( -40, -55, 3.14159);
 
-    public static MecanumEndpoint MID_POINT = new MecanumEndpoint(2, -40, 3.14159);
+    //public static MecanumEndpoint MID_POINT = new MecanumEndpoint(2, -38, 3.14159);
 
-    public static MecanumEndpoint BLOCK_POINT = new MecanumEndpoint( 21, -30, 3.84);
+    public static MecanumEndpoint BLOCK_POINT = new MecanumEndpoint( 23, -24, 3.92);
     public static MecanumEndpoint BLOCK_POINT_2 = new MecanumEndpoint(20, -25, 3.534);
-    public static MecanumEndpoint BLOCK_POINT_3 = MID_POINT;
+    //public static MecanumEndpoint BLOCK_POINT_3 = MID_POINT;
     public static MecanumEndpoint BLOCK_POINT_4 = new MecanumEndpoint(35, -26, 3.534);
 
     //public static double SPLINE_MAX_VEL = 30, SPLINE_MAX_ACCEL = 30;
@@ -51,13 +52,16 @@ public class TestAutoOp extends LinearOpMode {
     public Servo HL;
     public DcMotor IntakeLeft;
     public DcMotor IntakeRight;
+    public int sign;
 
     public static HookHandler hookController;
 
     public static double upperLimit = 0.6;
     public static double lowerLimit = 0.338;
 
-    public static double delay1 = 100, delay2 = 1000, delay3 = 1000;
+    public static double delay1 = 100, delay2 = 1500, delay3 = 1250;
+
+    public DSController inputHandler;
 
     /*
     //    public static double x1 = 30;
@@ -76,6 +80,41 @@ public class TestAutoOp extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
+        inputHandler = new DSController(gamepad1);
+        while (!isStarted()){
+           inputHandler.run();
+           //if the side is blue
+           if(inputHandler.dPadLeft.released) {
+               sign = 1;
+           } //if the side is red
+             else if(inputHandler.dPadRight.released){
+               sign = -1;
+           }
+        }
+
+        Pose2dWrapper startPose = new Pose2dWrapper(-36, -62, 1.5707);
+        MecanumEndpoint PLAT_POINT = new MecanumEndpoint( -56, -28, 1.5707, 30, 30);
+        MecanumEndpoint PLAT_POINT_2 = new MecanumEndpoint( -40, -55, 3.14159);
+
+        MecanumEndpoint MID_POINT = new MecanumEndpoint(2, -38, 3.14159);
+
+        MecanumEndpoint BLOCK_POINT = new MecanumEndpoint( 23, -24, 3.92);
+        MecanumEndpoint BLOCK_POINT_2 = new MecanumEndpoint(20, -25, 3.534);
+        MecanumEndpoint BLOCK_POINT_3 = MID_POINT;
+        MecanumEndpoint BLOCK_POINT_4 = new MecanumEndpoint(35, -26, 3.534);
+
+        if (sign < 0){
+            startPose.y *= -1;
+            startPose.heading *= -1;
+
+            PLAT_POINT.invertSides();
+            PLAT_POINT_2.invertSides();
+            MID_POINT.invertSides();
+            BLOCK_POINT.invertSides();
+            BLOCK_POINT_2.invertSides();
+            BLOCK_POINT_3.invertSides();
+            BLOCK_POINT_4.invertSides();
+        }
 
         claw = hardwareMap.servo.get("claw");
         HR = hardwareMap.servo.get("HR");
@@ -126,7 +165,7 @@ public class TestAutoOp extends LinearOpMode {
 
         handleClaw(true);
 
-        waitForStart();
+
 
         drive.followTrajectory(traj1);
         handleHooks(true);

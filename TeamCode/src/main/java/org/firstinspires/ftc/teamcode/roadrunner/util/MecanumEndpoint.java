@@ -57,6 +57,6 @@ public class MecanumEndpoint {
 
     public void invertSides(){
         pose.y = -pose.y;
-        pose.heading = (pose.heading + 2 * Math.PI) % 2 * Math.PI;
+        pose.heading = -getHeading();
     }
 }

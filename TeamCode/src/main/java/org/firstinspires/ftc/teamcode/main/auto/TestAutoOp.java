@@ -33,13 +33,13 @@ public class TestAutoOp extends LinearOpMode {
     //IMPORTANT: X increases upwards, Y increases to the left
     //Rotation is CCW and 0 is on the x axis
 
-    public static Pose2dWrapper startPose = new Pose2dWrapper(-36, -64, 1.5707);
-    public static MecanumEndpoint PLAT_POINT = new MecanumEndpoint( -59, -30, 1.5707, 30, 30);
-    public static MecanumEndpoint PLAT_POINT_2 = new MecanumEndpoint( -32, -45, 3.14159);
+    public static Pose2dWrapper startPose = new Pose2dWrapper(-36, -62, 1.5707);
+    public static MecanumEndpoint PLAT_POINT = new MecanumEndpoint( -56, -30, 1.5707, 30, 30);
+    public static MecanumEndpoint PLAT_POINT_2 = new MecanumEndpoint( -40, -55, 3.14159);
 
-    public static MecanumEndpoint MID_POINT = new MecanumEndpoint(0, -40, 3.14159);
+    public static MecanumEndpoint MID_POINT = new MecanumEndpoint(2, -40, 3.14159);
 
-    public static MecanumEndpoint BLOCK_POINT = new MecanumEndpoint( 12, -25, 3.926);
+    public static MecanumEndpoint BLOCK_POINT = new MecanumEndpoint( 21, -30, 3.84);
     public static MecanumEndpoint BLOCK_POINT_2 = new MecanumEndpoint(20, -25, 3.534);
     public static MecanumEndpoint BLOCK_POINT_3 = new MecanumEndpoint(27, -26, 3.534);
     public static MecanumEndpoint BLOCK_POINT_4 = new MecanumEndpoint(35, -26, 3.534);

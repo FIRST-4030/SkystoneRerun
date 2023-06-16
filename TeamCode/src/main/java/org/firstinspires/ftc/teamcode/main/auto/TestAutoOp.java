@@ -81,8 +81,10 @@ public class TestAutoOp extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         inputHandler = new DSController(gamepad1);
+        telemetry.addData("Right on DPAD for RED, Left on DPAD for BLUE", "");
         while (!isStarted()){
            inputHandler.run();
+           telemetry.addData("Multiplier", sign);
            //if the side is blue
            if(inputHandler.dPadLeft.released) {
                sign = 1;
@@ -229,4 +231,5 @@ public class TestAutoOp extends LinearOpMode {
 
         swing.setPosition(output);
     }
+
 }

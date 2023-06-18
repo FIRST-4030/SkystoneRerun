@@ -32,20 +32,8 @@ public class TestAutoOp extends LinearOpMode {
 
 
     //IMPORTANT: X increases upwards, Y increases to the left
-    //Rotation is CCW and 0 is on the x axis
+    //Rotation is CCW and 0 radians/degrees is on the x axis
 
-    public static Pose2dWrapper startPose = new Pose2dWrapper(-36, -62, 1.5707);
-    public static MecanumEndpoint PLAT_POINT = new MecanumEndpoint( -56, -28, 1.5707, 30, 30);
-    public static MecanumEndpoint PLAT_POINT_2 = new MecanumEndpoint( -40, -55, 3.14159);
-
-    //public static MecanumEndpoint MID_POINT = new MecanumEndpoint(2, -38, 3.14159);
-
-    public static MecanumEndpoint BLOCK_POINT = new MecanumEndpoint( 23, -24, 3.92);
-    public static MecanumEndpoint BLOCK_POINT_2 = new MecanumEndpoint(20, -25, 3.534);
-    //public static MecanumEndpoint BLOCK_POINT_3 = MID_POINT;
-    public static MecanumEndpoint BLOCK_POINT_4 = new MecanumEndpoint(35, -26, 3.534);
-
-    //public static double SPLINE_MAX_VEL = 30, SPLINE_MAX_ACCEL = 30;
     public Servo claw;
     public Servo swing;
     public Servo HR;
@@ -134,7 +122,7 @@ public class TestAutoOp extends LinearOpMode {
                 .splineTo(new Vector2d(PLAT_POINT.pose.x, PLAT_POINT.pose.y), PLAT_POINT.pose.heading, PLAT_POINT.getMaxVel(), PLAT_POINT.getMaxAccel())
                 .build();
 
-        Trajectory traj2 = drive.trajectoryBuilder(traj1.end())
+        Trajectory traj2 = drive.trajectoryBuilder(traj1.end()) //platform endpoint
                 .lineToLinearHeading(PLAT_POINT_2.getPose())
                 .build();
 
@@ -142,7 +130,7 @@ public class TestAutoOp extends LinearOpMode {
                 .lineToLinearHeading(MID_POINT.getPose())
                 .build();
 
-        Trajectory traj4 = drive.trajectoryBuilder(traj3.end())
+        Trajectory traj4 = drive.trajectoryBuilder(traj3.end()) //combine with traj3 for smooth spline
                 .lineToLinearHeading(BLOCK_POINT.getPose())
                 .build();
 
@@ -150,7 +138,7 @@ public class TestAutoOp extends LinearOpMode {
                 .lineToLinearHeading(MID_POINT.getPose())
                 .build();
 
-        Trajectory traj6 = drive.trajectoryBuilder(traj5.end())
+        Trajectory traj6 = drive.trajectoryBuilder(traj5.end()) //combine with traj5 for smooth spline
                 .lineToLinearHeading(PLAT_POINT_2.getPose())
                 .build();
 

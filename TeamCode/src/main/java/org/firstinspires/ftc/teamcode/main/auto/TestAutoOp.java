@@ -80,6 +80,7 @@ public class TestAutoOp extends LinearOpMode {
              else if(inputHandler.dPadRight.released){
                sign = -1;
            }
+             telemetry.update();
         }
 
         Pose2dWrapper startPose = new Pose2dWrapper(-36, -62, 1.5707);
@@ -90,7 +91,6 @@ public class TestAutoOp extends LinearOpMode {
 
         MecanumEndpoint BLOCK_POINT = new MecanumEndpoint( 23, -24, 3.92);
         MecanumEndpoint BLOCK_POINT_2 = new MecanumEndpoint(20, -25, 3.534);
-        MecanumEndpoint BLOCK_POINT_3 = MID_POINT;
         MecanumEndpoint BLOCK_POINT_4 = new MecanumEndpoint(35, -26, 3.534);
 
         if (sign < 0){
@@ -102,7 +102,6 @@ public class TestAutoOp extends LinearOpMode {
             MID_POINT.invertSides();
             BLOCK_POINT.invertSides();
             BLOCK_POINT_2.invertSides();
-            BLOCK_POINT_3.invertSides();
             BLOCK_POINT_4.invertSides();
         }
 
